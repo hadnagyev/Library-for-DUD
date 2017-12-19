@@ -39,13 +39,6 @@ public class Book {
 		this.bookOrigin = bookOrigin;
 		this.bookLocation = bookLocation;
 	}
-	
-
-	public Book(int id) {
-		super();
-		this.id = id;
-	}
-
 
 	@Override
 	public String toString() {
