@@ -21,16 +21,37 @@ public class Application {
 		app.readFromFile();
 		app.fillBooksToLibrary(app.findFirstEntry());
 
+		// temporary for testing
+		app.showMenu();
 		Scanner sc = new Scanner(System.in);
-
-		int izbor = sc.nextInt();
-		while (izbor != 0) {
+		int menuID = sc.nextInt();
+		while (menuID != 0) {
 			
+			if (menuID == 1) {
+				for (Book book : app.library) {
+					System.out.println(book.toString());
+					
+				}
+			}else if(menuID==2){
+				System.out.println("Enter book id");
+				int bookIndex = sc.nextInt();
+				System.out.println(app.library.get(bookIndex-1));
+			}
+			app.showMenu();
+			menuID = sc.nextInt();
 		}
 		sc.close();
+		// end of temporary for testing
 	}
 
-	// paarsing temporary arraylist to arraylist with book model
+	// temporary menu
+	private void showMenu() {
+		System.out.println("0 - exit");
+		System.out.println("1 - list all books");
+		System.out.println("2 - list book on id (redni broj)");
+	}
+
+	// parsing temporary arraylist to arraylist with book model
 	private void fillBooksToLibrary(int indexOfFirstEntry) {
 		while (indexOfFirstEntry != readFromFile.size()) {
 			String idInput = readFromFile.get(indexOfFirstEntry++);
