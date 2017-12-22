@@ -30,7 +30,7 @@ public class Application {
 		sc.close();
 	}
 
-	// populate arraylist from initial arraylist to arraylist with book model
+	// paarsing temporary arraylist to arraylist with book model
 	private void fillBooksToLibrary(int indexOfFirstEntry) {
 		while (indexOfFirstEntry != readFromFile.size()) {
 			String idInput = readFromFile.get(indexOfFirstEntry++);
