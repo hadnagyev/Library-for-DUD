@@ -12,8 +12,6 @@ import java.util.stream.Stream;
 
 import javax.swing.JTable;
 
-import rs.dud.model.Book;
-import rs.dud.model.Library;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +26,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import rs.dud.library.model.Book;
+import rs.dud.library.model.Library;
 
 public class App extends Application {
 	ArrayList<String> readFromFile = new ArrayList<String>();

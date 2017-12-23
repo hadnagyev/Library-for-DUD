@@ -5,7 +5,8 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import rs.dud.model.Library;
+
+import rs.dud.library.model.Library;
 
 public class ModelTest {
 

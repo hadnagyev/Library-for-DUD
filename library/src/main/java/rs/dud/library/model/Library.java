@@ -1,4 +1,4 @@
-package rs.dud.model;
+package rs.dud.library.model;
 
 import java.util.ArrayList;
 
