@@ -1,4 +1,4 @@
-package main;
+package rs.dud.library.main;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

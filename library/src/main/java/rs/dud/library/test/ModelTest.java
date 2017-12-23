@@ -1,4 +1,4 @@
-package test;
+package rs.dud.library.test;
 
 import static org.junit.Assert.*;
 

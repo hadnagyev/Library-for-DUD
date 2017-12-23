@@ -1,4 +1,4 @@
-package main;
+package rs.dud.library.main;
 
 import java.awt.TextField;
 import java.io.IOException;
