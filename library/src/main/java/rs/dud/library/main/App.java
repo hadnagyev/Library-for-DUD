@@ -13,12 +13,13 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -44,12 +45,12 @@ public class App extends Application {
 		app.readFromFile();//populate arraylist from txt file provided
 		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first entry
 		Library library = new Library(app.tempLibrary, "Svetislav");// TODO hard coded library owner, fix it
-		primaryStage.setTitle(library.getLibraryOwner()+" Library");
+		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 		ListView<Book> listView = new ListView<>();
 		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 		listView.setItems(observableList);
 		listView.setMaxSize(1000, 1000);
-		
+
 		Button btnList = new Button("List all books");
 		TextField txtFieldIdNumber = new TextField();
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
@@ -72,6 +73,18 @@ public class App extends Application {
 			}
 
 		});
+		btnList.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent e) {
+				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
+					
+		
+				} else {
+					
+				}
+			}
+		});
 		GridPane gPane = new GridPane();
 		gPane.setHgap(5);//gap between columns
 		gPane.getChildren().add(listView);
@@ -86,6 +99,7 @@ public class App extends Application {
 
 		StackPane.setAlignment(btnList, Pos.CENTER_LEFT);//align the button for list all books
 		gPane.getChildren().add(txtFieldIdNumber);
+
 		primaryStage.setScene(new Scene(gPane, 1000, 750));//size of the window
 		primaryStage.show();
 	}
