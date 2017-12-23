@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.TextField;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -9,57 +10,86 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import rs.dud.model.Book;
+import javax.swing.JTable;
 
-public class Application {
+import rs.dud.model.Book;
+import rs.dud.model.Library;
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
+public class App extends Application {
 	ArrayList<String> readFromFile = new ArrayList<String>();
-	ArrayList<Book> library = new ArrayList<Book>();
+	ArrayList<Book> tempLibrary = new ArrayList<Book>();
 	String file = "POPIS KNJIGA najnoviji.txt";
 
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
-		Application app = new Application();
+
+		launch(args);
+
+	}
+
+	private void showAllBooks(Library library) {
+		System.out.println(library.toString());
+		System.out.println(library.getBooks().size() + " books in the library");
+		System.out.println("Library owner is " + library.getLibraryOwner());
+
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		App app = new App();
 		app.readFromFile();
 		app.fillBooksToLibrary(app.findFirstEntry());
+		Library library = new Library(app.tempLibrary, "Svetislav");
+		primaryStage.setTitle("Library");
+		ListView<Book> listView = new ListView<>();
+		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
+		listView.setItems(observableList);
+		listView.setCellFactory(new Callback<ListView<Book>, ListCell<Book>>() {
 
-		// temporary for testing
-		app.showMenu();
-		Scanner sc = new Scanner(System.in);
-		int menuID = sc.nextInt();
-		while (menuID != 0) {
-			
-			if (menuID == 1) {
-				for (Book book : app.library) {
-					System.out.println(book.toString());
-					
-				}
-			}else if(menuID==2){
-				System.out.println("Enter book id");
-				int bookIndex = sc.nextInt();
-				System.out.println(app.library.get(bookIndex-1));
+			@Override
+			public ListCell<Book> call(ListView<Book> param) {
+				ListCell<Book> books = new ListCell<Book>() {
+					@Override
+					protected void updateItem(Book book, boolean bln) {
+						super.updateItem(book, bln);
+						if (book != null) {
+							setText(book.toString());
+
+						}
+					}
+				};
+				return books;
 			}
-			app.showMenu();
-			menuID = sc.nextInt();
-		}
-		sc.close();
-		// end of temporary for testing
+
+		});
+		StackPane root = new StackPane();
+		root.getChildren().add(listView);
+		primaryStage.setScene(new Scene(root, 500, 750));
+		primaryStage.show();
 	}
 
-	// temporary menu
-	private void showMenu() {
-		System.out.println("0 - exit");
-		System.out.println("1 - list all books");
-		System.out.println("2 - list book on id (redni broj)");
-	}
-
-	// parsing temporary arraylist to arraylist with book model
+	// parsing temporary arraylist to templibrary with book model
 	private void fillBooksToLibrary(int indexOfFirstEntry) {
 		while (indexOfFirstEntry != readFromFile.size()) {
 			String idInput = readFromFile.get(indexOfFirstEntry++);
-			String idNumber = idInput.substring(0, idInput.length() - 2);
-
+			String idNumber = idInput.substring(0, idInput.length() - 2); // erasing ". " at the end of the String in id number
 			Integer id = Integer.valueOf(idNumber);
 			String inventoryNumberInput = readFromFile.get(indexOfFirstEntry++);
 			String inventoryNumberValue;
+			// skip if there is no inventory number
 			if (inventoryNumberInput.equals("")) {
 				inventoryNumberValue = "0";
 			} else {
@@ -70,6 +100,7 @@ public class Application {
 			String publisherName = readFromFile.get(indexOfFirstEntry++);
 
 			Year yearOfPublishing;
+			// skip if there is not year of publishing
 			if (readFromFile.get(indexOfFirstEntry).equals("")) {
 				yearOfPublishing = null;
 				indexOfFirstEntry++;
@@ -92,11 +123,12 @@ public class Application {
 				indexOfFirstEntry++;
 			}
 
-			Book book = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal,
-					writer, originalTitle, title, language, writingSystem, genre, bookCondition, bookOrigin,
-					bookLocation);
-			library.add(book);
-			System.out.println(book.toString());
+			Book book = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
+					bookOrigin, bookLocation);
+			tempLibrary.add(book);
+
+			// end if there is "id number" in the string which means it is the
+			// bottom of the table
 			if (readFromFile.get(indexOfFirstEntry).equals("R.br.")) {
 				break;
 			}
@@ -121,13 +153,16 @@ public class Application {
 		String line;
 		outerloop: while (indexOfFirstEntry != readFromFile.size()) {
 			line = readFromFile.get(indexOfFirstEntry);
-			System.out.println(indexOfFirstEntry);
+
+			// if string contains "1. ", it is the index of the first entry of
+			// the book in txt file
 			if (line.equals("1. ")) {
 				break outerloop;
 			}
 			indexOfFirstEntry++;
 		}
-		System.out.println(indexOfFirstEntry);
+
 		return indexOfFirstEntry;
 	}
+
 }

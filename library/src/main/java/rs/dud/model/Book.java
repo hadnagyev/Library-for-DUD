@@ -14,14 +14,13 @@ public class Book {
 	String title; // naslov
 	String language; // jezik
 	String writingSystem; // pismo (cyrylic, latin etc.)
-	String Genre; // zanr
+	String genre; // zanr
 	String bookCondition; // stanje knjige
 	String bookOrigin; // poreklo knjige
 	String bookLocation; // gde se nalazi
 
-	public Book(int id, int inventoryNumber, String publisherName, Year yearOfPublishing, String edition,
-			String nameOfWriterOriginal, String writer, String originalTitle, String title, String language,
-			String writingSystem, String genre, String bookCondition, String bookOrigin, String bookLocation) {
+	public Book(int id, int inventoryNumber, String publisherName, Year yearOfPublishing, String edition, String nameOfWriterOriginal, String writer, String originalTitle, String title,
+			String language, String writingSystem, String genre, String bookCondition, String bookOrigin, String bookLocation) {
 		super();
 		this.id = id;
 		this.inventoryNumber = inventoryNumber;
@@ -34,7 +33,7 @@ public class Book {
 		this.title = title;
 		this.language = language;
 		this.writingSystem = writingSystem;
-		Genre = genre;
+		this.genre = genre;
 		this.bookCondition = bookCondition;
 		this.bookOrigin = bookOrigin;
 		this.bookLocation = bookLocation;
@@ -42,12 +41,11 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", inventoryNumber=" + inventoryNumber + ", publisherName=" + publisherName
-				+ ", yearOfPublishing=" + yearOfPublishing + ", edition=" + edition + ", nameOfWriterOriginal="
-				+ nameOfWriterOriginal + ", writer=" + writer + ", originalTitle=" + originalTitle + ", title=" + title
-				+ ", language=" + language + ", writingSystem=" + writingSystem + ", Genre=" + Genre
-				+ ", bookCondition=" + bookCondition + ", bookOrigin=" + bookOrigin + ", bookLocation=" + bookLocation
-				+ "]";
+		String ls = System.getProperty("line.separator");
+		return "id=" + id + ls + " inventoryNumber = " + inventoryNumber + ls + " publisherName = " + publisherName + ls + " yearOfPublishing = " + yearOfPublishing + ls + " edition = "
+				+ edition + ls + " nameOfWriterOriginal = " + nameOfWriterOriginal + ls + " writer = " + writer + ls + " originalTitle = " + originalTitle + ls + " title = " + title + ls
+				+ " language = " + language + ls + " writingSystem = " + writingSystem + ls + " Genre = " + genre + ls + " bookCondition = " + bookCondition + ls + " bookOrigin = " + bookOrigin + ls
+				+ " bookLocation = " + bookLocation;
 	}
 
 	public int getId() {
@@ -139,11 +137,11 @@ public class Book {
 	}
 
 	public String getGenre() {
-		return Genre;
+		return genre;
 	}
 
 	public void setGenre(String genre) {
-		Genre = genre;
+		this.genre = genre;
 	}
 
 	public String getBookCondition() {
