@@ -1,28 +1,18 @@
 package rs.dud.library.main;
 
-import java.awt.TextField;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.stream.Stream;
-
-import javax.swing.JTable;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -37,13 +27,6 @@ public class App extends Application {
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
 
 		launch(args);
-
-	}
-
-	private void showAllBooks(Library library) {
-		System.out.println(library.toString());
-		System.out.println(library.getBooks().size() + " books in the library");
-		System.out.println("Library owner is " + library.getLibraryOwner());
 
 	}
 
@@ -81,7 +64,7 @@ public class App extends Application {
 		primaryStage.show();
 	}
 
-	// parsing temporary arraylist to templibrary with book model
+	// parsing temporary arraylist to templibrary list with book model
 	private void fillBooksToLibrary(int indexOfFirstEntry) {
 		while (indexOfFirstEntry != readFromFile.size()) {
 			String idInput = readFromFile.get(indexOfFirstEntry++);
