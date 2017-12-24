@@ -9,9 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -47,36 +49,21 @@ public class App extends Application {
 		Library library = new Library(app.tempLibrary, "Svetislav");// TODO hard coded library owner, fix it
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 		ListView<Book> listView = new ListView<>();
-		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
-		listView.setItems(observableList);
+
+
 		listView.setMaxSize(1000, 1000);
 
 		Button btnList = new Button("List all books");
+		Button btnListID = new Button("List book by id");
 		TextField txtFieldIdNumber = new TextField();
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 
-		listView.setCellFactory(new Callback<ListView<Book>, ListCell<Book>>() {
-
-			@Override
-			public ListCell<Book> call(ListView<Book> param) {
-				ListCell<Book> books = new ListCell<Book>() {
-					@Override
-					protected void updateItem(Book book, boolean bln) {
-						super.updateItem(book, bln);
-						if (book != null) {
-							setText(book.toString());
-
-						}
-					}
-				};
-				return books;
-			}
-
-		});
 		btnList.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent e) {
+				ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
+				listView.setItems(observableList);
 				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
 					
 		
@@ -85,6 +72,22 @@ public class App extends Application {
 				}
 			}
 		});
+		btnListID.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent e) {
+
+				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
+					ArrayList<Book> bookByID = new ArrayList<Book>();
+					bookByID.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText())-1));
+					ObservableList<Book> observableList = FXCollections.observableList(bookByID);
+					listView.setItems(observableList);
+				} else {
+					
+				}
+			}
+		});
+		
 		GridPane gPane = new GridPane();
 		gPane.setHgap(5);//gap between columns
 		gPane.getChildren().add(listView);
@@ -93,14 +96,16 @@ public class App extends Application {
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
 
 		gPane.getChildren().add(btnList);
+		gPane.getChildren().add(btnListID);
 		GridPane.setColumnIndex(btnList, 1);//set button to specific column
+		GridPane.setConstraints(btnListID, 1, 2);
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
 		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfield for id input
 
 		StackPane.setAlignment(btnList, Pos.CENTER_LEFT);//align the button for list all books
 		gPane.getChildren().add(txtFieldIdNumber);
 
-		primaryStage.setScene(new Scene(gPane, 1000, 750));//size of the window
+		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
 		primaryStage.show();
 	}
 
