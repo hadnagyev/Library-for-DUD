@@ -2,18 +2,15 @@ package rs.dud.library.main;
 
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,7 +19,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -30,7 +26,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class App extends Application {
 	ArrayList<String> readFromFile = new ArrayList<String>();
@@ -50,7 +45,6 @@ public class App extends Application {
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 		ListView<Book> listView = new ListView<>();
 
-
 		listView.setMaxSize(1000, 1000);
 
 		Button btnList = new Button("List all books");
@@ -58,6 +52,7 @@ public class App extends Application {
 		TextField txtFieldIdNumber = new TextField();
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 
+		// list all books
 		btnList.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -65,29 +60,30 @@ public class App extends Application {
 				ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 				listView.setItems(observableList);
 				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
-					
-		
+
 				} else {
-					
+
 				}
 			}
 		});
+		//list Book by specific id that user typed in txtFieldIdNumber
+		//TODO make this as a separate function, getting crowded
 		btnListID.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent e) {
 
 				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
-					ArrayList<Book> bookByID = new ArrayList<Book>();
-					bookByID.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText())-1));
+					ArrayList<Book> bookByID = new ArrayList<Book>(); //TODO fix this, making arraylist instead of showing only one item
+					bookByID.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
 					ObservableList<Book> observableList = FXCollections.observableList(bookByID);
 					listView.setItems(observableList);
 				} else {
-					
+
 				}
 			}
 		});
-		
+
 		GridPane gPane = new GridPane();
 		gPane.setHgap(5);//gap between columns
 		gPane.getChildren().add(listView);
@@ -108,6 +104,7 @@ public class App extends Application {
 		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
 		primaryStage.show();
 	}
+
 
 	// parsing temporary arraylist to templibrary list with book model
 	private void fillBooksToLibrary(int indexOfFirstEntry) {
