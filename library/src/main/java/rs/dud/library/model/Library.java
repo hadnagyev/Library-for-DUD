@@ -15,6 +15,9 @@ public class Library {
 	public ArrayList<Book> getBooks() {
 		return books;
 	}
+	public ArrayList<Book> getBooks(int id) {
+		return books;
+	}
 
 	public void setBooks(ArrayList<Book> books) {
 		this.books = books;

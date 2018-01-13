@@ -21,6 +21,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -35,76 +37,104 @@ public class App extends Application {
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
 		launch(args);
 	}
+	
+	Button btnList = new Button("List all books");
+	Button btnListID = new Button("List book by id");
+	TextField txtFieldIdNumber = new TextField();
+	GridPane gPane = new GridPane();
+	ListView<Book> listView = new ListView<>();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		App app = new App();
+		Library library = new Library(app.tempLibrary, "Svetislav");// TODO hard coded library owner, fix it, maybe not even needed
 		app.readFromFile();//populate arraylist from txt file provided
 		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first entry
-		Library library = new Library(app.tempLibrary, "Svetislav");// TODO hard coded library owner, fix it
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
-		ListView<Book> listView = new ListView<>();
 
-		listView.setMaxSize(1000, 1000);
+		setUpButtons(library); 
+		setUpTxtFields();
+		setUpGpane(gPane,listView,btnListID,txtFieldIdNumber);
+		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
+		primaryStage.show();
+	}
 
-		Button btnList = new Button("List all books");
-		Button btnListID = new Button("List book by id");
-		TextField txtFieldIdNumber = new TextField();
+
+	private void setUpTxtFields() {
+		//txt field for searching books by id
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
+		//if enter gets pressed while txtfieldID has focus button for listing that id is pressed
+		txtFieldIdNumber.setOnKeyPressed(new EventHandler<KeyEvent>()
+	    {
+	        @Override
+	        public void handle(KeyEvent ke)
+	        {
+	            if (ke.getCode().equals(KeyCode.ENTER))
+	            {
 
-		// list all books
+	            		btnListID.fire();
+
+	                
+	            }
+	        }
+	    });
+		
+	}
+
+
+	private void setUpButtons(Library library) {
+		// list all books button
+		
 		btnList.setOnAction(new EventHandler<ActionEvent>() {
-
+			
 			@Override
 			public void handle(ActionEvent e) {
-				ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
-				listView.setItems(observableList);
-				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
 
-				} else {
-
-				}
+				if (txtFieldIdNumber.getText(0,9) != null && !txtFieldIdNumber.getText().isEmpty()){
+					System.out.println(library.getBooks().size()-1);
+					ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
+					listView.setItems(observableList);
+					
+				} 
 			}
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
-		//TODO make this as a separate function, getting crowded
 		btnListID.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent e) {
 
-				if ((txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty())) {
-					ArrayList<Book> bookByID = new ArrayList<Book>(); //TODO fix this, making arraylist instead of showing only one item
+				if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty()&&Integer.parseInt(txtFieldIdNumber.getText())<library.getBooks().size()-1) {
+					ArrayList<Book> bookByID = new ArrayList<Book>(); //TODO making array list instead of sending only one item
 					bookByID.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
 					ObservableList<Book> observableList = FXCollections.observableList(bookByID);
 					listView.setItems(observableList);
 				} else {
-
+					//TODO show some error for searching book with id greater than in database
 				}
 			}
 		});
+		
+	}
 
-		GridPane gPane = new GridPane();
+
+	private void setUpGpane(GridPane gPane,ListView<Book> listView,Button btnListID,TextField txtFieldIdNumber) {
 		gPane.setHgap(5);//gap between columns
 		gPane.getChildren().add(listView);
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
 		gPane.getColumnConstraints().add(new ColumnConstraints(800)); //limiting first column width
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
-
-		gPane.getChildren().add(btnList);
-		gPane.getChildren().add(btnListID);
 		GridPane.setColumnIndex(btnList, 1);//set button to specific column
 		GridPane.setConstraints(btnListID, 1, 2);
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
 		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfield for id input
-
-		StackPane.setAlignment(btnList, Pos.CENTER_LEFT);//align the button for list all books
+		gPane.getChildren().add(btnList);
+		gPane.getChildren().add(btnListID);
 		gPane.getChildren().add(txtFieldIdNumber);
-
-		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
-		primaryStage.show();
+		listView.setMaxSize(1000, 1000);
+		StackPane.setAlignment(btnList, Pos.CENTER_LEFT);//align the button for list all books
+		
 	}
-
 
 	// parsing temporary arraylist to templibrary list with book model
 	private void fillBooksToLibrary(int indexOfFirstEntry) {
