@@ -41,6 +41,7 @@ public class App extends Application {
 	Button btnList = new Button("List all books");
 	Button btnListID = new Button("List book by id");
 	TextField txtFieldIdNumber = new TextField();
+	TextField txtFieldBookTitle = new TextField();
 	GridPane gPane = new GridPane();
 	ListView<Book> listView = new ListView<>();
 
@@ -54,7 +55,7 @@ public class App extends Application {
 
 		setUpButtons(library); 
 		setUpTxtFields();
-		setUpGpane(gPane,listView,btnListID,txtFieldIdNumber);
+		setUpGpane();
 		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
 		primaryStage.show();
 	}
@@ -63,7 +64,8 @@ public class App extends Application {
 	private void setUpTxtFields() {
 		//txt field for searching books by id
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
-		//if enter gets pressed while txtfieldID has focus button for listing that id is pressed
+		txtFieldBookTitle.setPromptText("input title of the book");//initial text in the textfield
+		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
 		txtFieldIdNumber.setOnKeyPressed(new EventHandler<KeyEvent>()
 	    {
 	        @Override
@@ -71,31 +73,32 @@ public class App extends Application {
 	        {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
-
 	            		btnListID.fire();
-
-	                
 	            }
 	        }
 	    });
-		
+		txtFieldBookTitle.setOnKeyPressed(new EventHandler<KeyEvent>()
+	    {
+	        @Override
+	        public void handle(KeyEvent ke)
+	        {
+	            if (ke.getCode().equals(KeyCode.ENTER))
+	            {
+	            		btnListID.fire();
+	            }
+	        }
+	    });
 	}
 
 
 	private void setUpButtons(Library library) {
 		// list all books button
-		
 		btnList.setOnAction(new EventHandler<ActionEvent>() {
-			
 			@Override
 			public void handle(ActionEvent e) {
-
-				if (txtFieldIdNumber.getText(0,9) != null && !txtFieldIdNumber.getText().isEmpty()){
 					System.out.println(library.getBooks().size()-1);
 					ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 					listView.setItems(observableList);
-					
-				} 
 			}
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
@@ -103,14 +106,24 @@ public class App extends Application {
 
 			@Override
 			public void handle(ActionEvent e) {
+				//only execute if txtfieldTitle has value
+				if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {
+					ArrayList<Book> bookByTitle = new ArrayList<Book>();
+					bookByTitle=library.getBookByTitle(bookByTitle,txtFieldBookTitle.getText());
+					if(bookByTitle!=null){
+						ObservableList<Book> observableList = FXCollections.observableList(bookByTitle);
+						listView.setItems(observableList);
+					}
 
+				}
+				//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 				if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty()&&Integer.parseInt(txtFieldIdNumber.getText())<library.getBooks().size()-1) {
 					ArrayList<Book> bookByID = new ArrayList<Book>(); //TODO making array list instead of sending only one item
-					bookByID.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
+					library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1);
 					ObservableList<Book> observableList = FXCollections.observableList(bookByID);
 					listView.setItems(observableList);
 				} else {
-					//TODO show some error for searching book with id greater than in database
+					//TODO show some error for searching book with id greater than database last entry
 				}
 			}
 		});
@@ -118,7 +131,7 @@ public class App extends Application {
 	}
 
 
-	private void setUpGpane(GridPane gPane,ListView<Book> listView,Button btnListID,TextField txtFieldIdNumber) {
+	private void setUpGpane() {
 		gPane.setHgap(5);//gap between columns
 		gPane.getChildren().add(listView);
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
@@ -127,10 +140,13 @@ public class App extends Application {
 		GridPane.setColumnIndex(btnList, 1);//set button to specific column
 		GridPane.setConstraints(btnListID, 1, 2);
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
-		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfield for id input
+		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfieldIDnumber for id input
+		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
+		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
 		gPane.getChildren().add(btnList);
 		gPane.getChildren().add(btnListID);
 		gPane.getChildren().add(txtFieldIdNumber);
+		gPane.getChildren().add(txtFieldBookTitle);
 		listView.setMaxSize(1000, 1000);
 		StackPane.setAlignment(btnList, Pos.CENTER_LEFT);//align the button for list all books
 		
@@ -183,7 +199,7 @@ public class App extends Application {
 			tempLibrary.add(book);
 
 			// end if there is "id number" in the string which means it is the
-			// bottom of the table
+			// bottom of the table got from file
 			if (readFromFile.get(indexOfFirstEntry).equals("R.br.")) {
 				break;
 			}

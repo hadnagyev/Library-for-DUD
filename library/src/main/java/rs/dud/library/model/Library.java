@@ -18,6 +18,19 @@ public class Library {
 	public ArrayList<Book> getBooks(int id) {
 		return books;
 	}
+	
+	public ArrayList<Book> getBookByTitle(ArrayList<Book> booksByTitle, String title){
+		title = title.toLowerCase();
+		System.out.println(title);
+		for(Book book:books){
+			if(book.getTitle().toLowerCase().contains(title)){
+				System.out.println(book.title);
+				booksByTitle.add(book);
+			}
+		}
+		return booksByTitle;
+		
+	}
 
 	public void setBooks(ArrayList<Book> books) {
 		this.books = books;
