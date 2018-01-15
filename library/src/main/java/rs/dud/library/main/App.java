@@ -39,7 +39,7 @@ public class App extends Application {
 	}
 	
 	Button btnList = new Button("List all books");
-	Button btnListID = new Button("List book by id");
+	Button btnSearch = new Button("Search");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
 	GridPane gPane = new GridPane();
@@ -50,7 +50,7 @@ public class App extends Application {
 		App app = new App();
 		Library library = new Library(app.tempLibrary, "Svetislav");// TODO hard coded library owner, fix it, maybe not even needed
 		app.readFromFile();//populate arraylist from txt file provided
-		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first entry
+		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first book entry
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 
 		setUpButtons(library); 
@@ -73,7 +73,7 @@ public class App extends Application {
 	        {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
-	            		btnListID.fire();
+	            		btnSearch.fire();
 	            }
 	        }
 	    });
@@ -84,7 +84,7 @@ public class App extends Application {
 	        {
 	            if (ke.getCode().equals(KeyCode.ENTER))
 	            {
-	            		btnListID.fire();
+	            		btnSearch.fire();
 	            }
 	        }
 	    });
@@ -96,35 +96,31 @@ public class App extends Application {
 		btnList.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-					System.out.println(library.getBooks().size()-1);
+
 					ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 					listView.setItems(observableList);
 			}
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
-		btnListID.setOnAction(new EventHandler<ActionEvent>() {
+		btnSearch.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent e) {
+				ArrayList<Book> booksFound = new ArrayList<Book>();
 				//only execute if txtfieldTitle has value
-				if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {
-					ArrayList<Book> bookByTitle = new ArrayList<Book>();
-					bookByTitle=library.getBookByTitle(bookByTitle,txtFieldBookTitle.getText());
-					if(bookByTitle!=null){
-						ObservableList<Book> observableList = FXCollections.observableList(bookByTitle);
-						listView.setItems(observableList);
-					}
-
+				if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {			
+					booksFound=library.getBookByTitle(booksFound,txtFieldBookTitle.getText());
 				}
+				
 				//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 				if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty()&&Integer.parseInt(txtFieldIdNumber.getText())<library.getBooks().size()-1) {
-					ArrayList<Book> bookByID = new ArrayList<Book>(); //TODO making array list instead of sending only one item
-					library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1);
-					ObservableList<Book> observableList = FXCollections.observableList(bookByID);
+					booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
+					ObservableList<Book> observableList = FXCollections.observableList(booksFound);
 					listView.setItems(observableList);
-				} else {
-					//TODO show some error for searching book with id greater than database last entry
 				}
+
+				ObservableList<Book> observableList = FXCollections.observableList(booksFound);
+				listView.setItems(observableList);
 			}
 		});
 		
@@ -138,13 +134,13 @@ public class App extends Application {
 		gPane.getColumnConstraints().add(new ColumnConstraints(800)); //limiting first column width
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
 		GridPane.setColumnIndex(btnList, 1);//set button to specific column
-		GridPane.setConstraints(btnListID, 1, 2);
+		GridPane.setConstraints(btnSearch, 1, 2);
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
 		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfieldIDnumber for id input
 		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
 		gPane.getChildren().add(btnList);
-		gPane.getChildren().add(btnListID);
+		gPane.getChildren().add(btnSearch);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
 		listView.setMaxSize(1000, 1000);
