@@ -26,6 +26,16 @@ public class Library {
 		return booksByTitle;
 		
 	}
+	public ArrayList<Book> getBookByOriginalTitle(ArrayList<Book> booksByParameter, String title){
+		title = title.toLowerCase();
+		for(Book book:books){
+			if(book.getOriginalTitle().toLowerCase().contains(title)){
+				booksByParameter.add(book);
+			}
+		}
+		return booksByParameter;
+		
+	}
 
 	public void setBooks(ArrayList<Book> books) {
 		this.books = books;

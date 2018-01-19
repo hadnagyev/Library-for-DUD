@@ -90,6 +90,7 @@ public class App extends Application {
 			//only execute if txtfieldTitle has value
 			if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {
 				booksFound = library.getBookByTitle(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookByOriginalTitle(booksFound, txtFieldBookTitle.getText());
 			}
 
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
