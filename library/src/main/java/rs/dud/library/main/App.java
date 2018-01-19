@@ -8,25 +8,21 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -37,8 +33,8 @@ public class App extends Application {
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
 		launch(args);
 	}
-	
-	Button btnList = new Button("List all books");
+
+	Button btnListAllBooks = new Button("List all books");
 	Button btnSearch = new Button("Search");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
@@ -53,79 +49,61 @@ public class App extends Application {
 		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first book entry
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 
-		setUpButtons(library); 
+		setUpButtons(library);
 		setUpTxtFields();
 		setUpGpane();
 		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
 		primaryStage.show();
 	}
 
-
 	private void setUpTxtFields() {
-		//txt field for searching books by id
+		//txt field for searching books by various parameters
+
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 		txtFieldBookTitle.setPromptText("input title of the book");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
-		txtFieldIdNumber.setOnKeyPressed(new EventHandler<KeyEvent>()
-	    {
-	        @Override
-	        public void handle(KeyEvent ke)
-	        {
-	            if (ke.getCode().equals(KeyCode.ENTER))
-	            {
-	            		btnSearch.fire();
-	            }
-	        }
-	    });
-		txtFieldBookTitle.setOnKeyPressed(new EventHandler<KeyEvent>()
-	    {
-	        @Override
-	        public void handle(KeyEvent ke)
-	        {
-	            if (ke.getCode().equals(KeyCode.ENTER))
-	            {
-	            		btnSearch.fire();
-	            }
-	        }
-	    });
+		txtFieldIdNumber.setOnKeyPressed(ke -> {
+				if (ke.getCode().equals(KeyCode.ENTER)) {
+					btnSearch.fire();
+				}
+			
+		});
+		txtFieldBookTitle.setOnKeyPressed(ke -> {
+				if (ke.getCode().equals(KeyCode.ENTER)) {
+					btnSearch.fire();
+				}
+			
+		});
 	}
-
 
 	private void setUpButtons(Library library) {
 		// list all books button
-		btnList.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
+		btnListAllBooks.setOnAction(e -> {
+			ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
+			listView.setItems(observableList);
 
-					ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
-					listView.setItems(observableList);
-			}
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
-		btnSearch.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent e) {
-				ArrayList<Book> booksFound = new ArrayList<Book>();
-				//only execute if txtfieldTitle has value
-				if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {			
-					booksFound=library.getBookByTitle(booksFound,txtFieldBookTitle.getText());
-				}
-				
-				//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
-				if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty()&&Integer.parseInt(txtFieldIdNumber.getText())<library.getBooks().size()-1) {
-					booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
-					ObservableList<Book> observableList = FXCollections.observableList(booksFound);
-					listView.setItems(observableList);
-				}
-
-				ObservableList<Book> observableList = FXCollections.observableList(booksFound);
-				listView.setItems(observableList);
+		//TODO make universal search, to find entered data in all fields and mark it in the table what field returned a result, maybe bold font on that particular entry
+		btnSearch.setOnAction(e -> {
+			ArrayList<Book> booksFound = new ArrayList<Book>();
+			//only execute if txtfieldTitle has value
+			if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {
+				booksFound = library.getBookByTitle(booksFound, txtFieldBookTitle.getText());
 			}
-		});
-		
-	}
 
+			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
+			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
+				booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
+				ObservableList<Book> observableList1 = FXCollections.observableList(booksFound);
+				listView.setItems(observableList1);
+			}
+			booksFound.sort(Comparator.comparing(Book::getId));
+			ObservableList<Book> observableList2 = FXCollections.observableList(booksFound);
+			listView.setItems(observableList2);
+		});
+
+	}
 
 	private void setUpGpane() {
 		gPane.setHgap(5);//gap between columns
@@ -133,19 +111,18 @@ public class App extends Application {
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
 		gPane.getColumnConstraints().add(new ColumnConstraints(800)); //limiting first column width
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
-		GridPane.setColumnIndex(btnList, 1);//set button to specific column
+		GridPane.setColumnIndex(btnListAllBooks, 1);//set button to specific column
 		GridPane.setConstraints(btnSearch, 1, 2);
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
 		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfieldIDnumber for id input
 		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
-		gPane.getChildren().add(btnList);
+		gPane.getChildren().add(btnListAllBooks);
 		gPane.getChildren().add(btnSearch);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
 		listView.setMaxSize(1000, 1000);
-		StackPane.setAlignment(btnList, Pos.CENTER_LEFT);//align the button for list all books
-		
+
 	}
 
 	// parsing temporary arraylist to templibrary list with book model
