@@ -41,7 +41,7 @@ public class App extends Application {
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
 	GridPane gPane = new GridPane();
-	ListView<String> listViewSelectedBook = new ListView<String>();
+	ListView<Book> listViewSelectedBook = new ListView<Book>();
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
 
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
@@ -56,9 +56,10 @@ public class App extends Application {
 		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first book entry
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 		setUpButtons(library);
+		setUpTableViewreaction();
 		setUpTxtFields();
 		setUpGpane();
-		primaryStage.setScene(new Scene(gPane, 1200, 800));//size of the window
+		primaryStage.setScene(new Scene(gPane, 1900, 800));//size of the window
 		primaryStage.show();
 	}
 
@@ -78,12 +79,21 @@ public class App extends Application {
 			}
 		});
 	}
-
+	private void setUpTableViewreaction(){
+		tableViewReturnedBooks.setOnMouseClicked(e ->{
+			ArrayList<Book> list = new ArrayList<Book>();
+			list.add(tableViewReturnedBooks.getSelectionModel().getSelectedItem());
+			listViewSelectedBook.setItems(FXCollections.observableArrayList(list));
+			});
+		
+	}
 	private void setUpButtons(Library library) {
 		// list all books button
+		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 		btnListAllBooks.setOnAction(e -> {
-			ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
+
 			tableViewReturnedBooks.setItems(observableList);
+
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
 		//TODO make universal search, to find entered data in all fields and mark it in the table what field returned a result, maybe bold font on that particular entry
@@ -108,10 +118,18 @@ public class App extends Application {
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
 				booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
+				
+			}
+			//if only one item found in tableview how it immediatelly in listview, otherwise clear listview
+			if(booksFound.size()<2&&booksFound.size()>0){
+				listViewSelectedBook.setItems(FXCollections.observableArrayList(booksFound));
+			}else{
+				listViewSelectedBook.getItems().clear();
 			}
 			booksFound.sort(Comparator.comparing(Book::getId));
 			ObservableList<Book> observableList2 = FXCollections.observableList(booksFound);
 			tableViewReturnedBooks.setItems(observableList2);
+			
 		});
 	}
 
@@ -120,14 +138,14 @@ public class App extends Application {
 		Field[] fields = Book.class.getDeclaredFields();//get all variables in Book
 		for (Field f : fields) {
 			TableColumn columnName = new TableColumn(f.getName());
-			columnName.setCellValueFactory(
-	                new PropertyValueFactory<>(f.getName()));
+			columnName.setMinWidth(110);
+			columnName.setCellValueFactory(new PropertyValueFactory<>(f.getName()));
 			tableViewReturnedBooks.getColumns().addAll(columnName);
 		}
-		listViewSelectedBook.setMaxSize(500, 450);
+		listViewSelectedBook.setMaxSize(700, 450);
 		gPane.setHgap(5);//gap between columns
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
-		gPane.getColumnConstraints().add(new ColumnConstraints(900)); //limiting first column width
+		gPane.getColumnConstraints().add(new ColumnConstraints(1700)); //limiting first column width
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
 		GridPane.setValignment(listViewSelectedBook, VPos.BOTTOM);
 		GridPane.setValignment(tableViewReturnedBooks, VPos.TOP);
@@ -143,7 +161,7 @@ public class App extends Application {
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);
 		gPane.getChildren().add(listViewSelectedBook);
-		tableViewReturnedBooks.setMaxSize(1000, 240);
+		tableViewReturnedBooks.setMaxSize(1700, 240);
 	}
 
 	// parsing temporary arraylist to templibrary list with book model
