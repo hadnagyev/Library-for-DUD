@@ -140,7 +140,7 @@ public class App extends Application {
 			columnName.setCellValueFactory(new PropertyValueFactory<>(f.getName()));
 			tableViewReturnedBooks.getColumns().add(columnName);
 		}
-		listViewSelectedBook.setMaxSize(700, 450);
+		listViewSelectedBook.setMaxSize(600, 350);
 		gPane.setHgap(5);//gap between columns
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
 		gPane.getColumnConstraints().add(new ColumnConstraints(1700)); //limiting first column width
@@ -159,7 +159,7 @@ public class App extends Application {
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);
 		gPane.getChildren().add(listViewSelectedBook);
-		tableViewReturnedBooks.setMaxSize(1700, 240);
+		tableViewReturnedBooks.setMaxSize(1700,340);
 	}
 
 	// parsing temporary arraylist to templibrary list with book model
