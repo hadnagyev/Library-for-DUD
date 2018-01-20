@@ -60,7 +60,7 @@ public class App extends Application {
 		//txt field for searching books by various parameters
 
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
-		txtFieldBookTitle.setPromptText("input title of the book");//initial text in the textfield
+		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
 		txtFieldIdNumber.setOnKeyPressed(ke -> {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
@@ -91,6 +91,15 @@ public class App extends Application {
 			if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {
 				booksFound = library.getBookByTitle(booksFound, txtFieldBookTitle.getText());
 				booksFound = library.getBookByOriginalTitle(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookByPublisherName(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookByEdition(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookByWriter(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookBylanguage(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookBygenre(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookByNameOfWriterOriginal(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookBybookCondition(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookBybookOrigin(booksFound, txtFieldBookTitle.getText());
+				booksFound = library.getBookBybookLocation(booksFound, txtFieldBookTitle.getText());
 			}
 
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list

@@ -54,6 +54,97 @@ public class Library {
 		return "Library [books=" + books + ", libraryOwner=" + libraryOwner + "]";
 	}
 
+	public ArrayList<Book> getBookByPublisherName(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getOriginalTitle().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+
+	}
+
+	public ArrayList<Book> getBookByEdition(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getEdition().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookByWriter(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getWriter().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookBygenre(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getGenre().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookBybookCondition(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getBookCondition().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookBylanguage(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getLanguage().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookBybookOrigin(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getBookOrigin().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookBybookLocation(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getBookLocation().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
+	public ArrayList<Book> getBookByNameOfWriterOriginal(ArrayList<Book> booksFound, String text) {
+		text = text.toLowerCase();
+		for(Book book:books){
+			if(book.getNameOfWriterOriginal().toLowerCase().contains(text)){
+				booksFound.add(book);
+			}
+		}
+		return booksFound;
+	}
+
 
 
 }
