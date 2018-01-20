@@ -22,10 +22,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -39,7 +42,7 @@ public class App extends Application {
 	TextField txtFieldBookTitle = new TextField();
 	GridPane gPane = new GridPane();
 	ListView<String> listViewSelectedBook = new ListView<String>();
-	TableView tableViewReturnedBooks = new TableView<>();
+	TableView<Book> tableViewReturnedBooks = new TableView<>();
 
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
 		launch(args);
@@ -113,9 +116,16 @@ public class App extends Application {
 	}
 
 	private void setUpGpane() {
+		//create field names in table view from Book class
+		Field[] fields = Book.class.getDeclaredFields();//get all variables in Book
+		for (Field f : fields) {
+			TableColumn columnName = new TableColumn(f.getName());
+			columnName.setCellValueFactory(
+	                new PropertyValueFactory<>(f.getName()));
+			tableViewReturnedBooks.getColumns().addAll(columnName);
+		}
+		listViewSelectedBook.setMaxSize(500, 450);
 		gPane.setHgap(5);//gap between columns
-		gPane.getChildren().add(tableViewReturnedBooks);
-		gPane.getChildren().add(listViewSelectedBook);
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
 		gPane.getColumnConstraints().add(new ColumnConstraints(900)); //limiting first column width
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
@@ -131,13 +141,9 @@ public class App extends Application {
 		gPane.getChildren().add(btnSearch);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
+		gPane.getChildren().add(tableViewReturnedBooks);
+		gPane.getChildren().add(listViewSelectedBook);
 		tableViewReturnedBooks.setMaxSize(1000, 240);
-		//create field names in table view from Book class
-		Field[] fields = Book.class.getDeclaredFields();//get all variables in Book
-		for(Field f:fields){
-			tableViewReturnedBooks.getColumns().add(new TableColumn(f.getName()));
-		}
-		listViewSelectedBook.setMaxSize(500, 450);
 	}
 
 	// parsing temporary arraylist to templibrary list with book model
