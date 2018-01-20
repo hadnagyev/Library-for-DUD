@@ -26,9 +26,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -137,10 +135,10 @@ public class App extends Application {
 		//create field names in table view from Book class
 		Field[] fields = Book.class.getDeclaredFields();//get all variables in Book
 		for (Field f : fields) {
-			TableColumn columnName = new TableColumn(f.getName());
+			TableColumn<Book, ?> columnName = new TableColumn<Book, Book>(f.getName());
 			columnName.setMinWidth(110);
 			columnName.setCellValueFactory(new PropertyValueFactory<>(f.getName()));
-			tableViewReturnedBooks.getColumns().addAll(columnName);
+			tableViewReturnedBooks.getColumns().add(columnName);
 		}
 		listViewSelectedBook.setMaxSize(700, 450);
 		gPane.setHgap(5);//gap between columns
