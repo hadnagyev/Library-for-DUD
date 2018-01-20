@@ -4,6 +4,7 @@ import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Year;
@@ -18,6 +19,8 @@ import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
@@ -30,16 +33,17 @@ public class App extends Application {
 	ArrayList<Book> tempLibrary = new ArrayList<Book>();
 	String file = "POPIS KNJIGA najnoviji.txt";
 
-	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
-		launch(args);
-	}
-
 	Button btnListAllBooks = new Button("List all books");
 	Button btnSearch = new Button("Search");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
 	GridPane gPane = new GridPane();
-	ListView<Book> listView = new ListView<>();
+	ListView<String> listViewSelectedBook = new ListView<String>();
+	TableView tableViewReturnedBooks = new TableView<>();
+
+	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
+		launch(args);
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -48,17 +52,15 @@ public class App extends Application {
 		app.readFromFile();//populate arraylist from txt file provided
 		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first book entry
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
-
 		setUpButtons(library);
 		setUpTxtFields();
 		setUpGpane();
-		primaryStage.setScene(new Scene(gPane, 1000, 800));//size of the window
+		primaryStage.setScene(new Scene(gPane, 1200, 800));//size of the window
 		primaryStage.show();
 	}
 
 	private void setUpTxtFields() {
 		//txt field for searching books by various parameters
-
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
@@ -66,13 +68,11 @@ public class App extends Application {
 			if (ke.getCode().equals(KeyCode.ENTER)) {
 				btnSearch.fire();
 			}
-
 		});
 		txtFieldBookTitle.setOnKeyPressed(ke -> {
 			if (ke.getCode().equals(KeyCode.ENTER)) {
 				btnSearch.fire();
 			}
-
 		});
 	}
 
@@ -80,8 +80,7 @@ public class App extends Application {
 		// list all books button
 		btnListAllBooks.setOnAction(e -> {
 			ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
-			listView.setItems(observableList);
-
+			tableViewReturnedBooks.setItems(observableList);
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
 		//TODO make universal search, to find entered data in all fields and mark it in the table what field returned a result, maybe bold font on that particular entry
@@ -102,27 +101,26 @@ public class App extends Application {
 				booksFound = library.getBookByBookOrigin(booksFound, txtSearch);
 				booksFound = library.getBookByBookLocation(booksFound, txtSearch);
 			}
-
-
+			//adding books returned with id search
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
 				booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
-				ObservableList<Book> observableList1 = FXCollections.observableList(booksFound);
-				listView.setItems(observableList1);
 			}
 			booksFound.sort(Comparator.comparing(Book::getId));
 			ObservableList<Book> observableList2 = FXCollections.observableList(booksFound);
-			listView.setItems(observableList2);
+			tableViewReturnedBooks.setItems(observableList2);
 		});
-
 	}
 
 	private void setUpGpane() {
 		gPane.setHgap(5);//gap between columns
-		gPane.getChildren().add(listView);
+		gPane.getChildren().add(tableViewReturnedBooks);
+		gPane.getChildren().add(listViewSelectedBook);
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
-		gPane.getColumnConstraints().add(new ColumnConstraints(800)); //limiting first column width
+		gPane.getColumnConstraints().add(new ColumnConstraints(900)); //limiting first column width
 		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
+		GridPane.setValignment(listViewSelectedBook, VPos.BOTTOM);
+		GridPane.setValignment(tableViewReturnedBooks, VPos.TOP);
 		GridPane.setColumnIndex(btnListAllBooks, 1);//set button to specific column
 		GridPane.setConstraints(btnSearch, 1, 2);
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
@@ -133,8 +131,13 @@ public class App extends Application {
 		gPane.getChildren().add(btnSearch);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
-		listView.setMaxSize(1000, 1000);
-
+		tableViewReturnedBooks.setMaxSize(1000, 240);
+		//create field names in table view from Book class
+		Field[] fields = Book.class.getDeclaredFields();//get all variables in Book
+		for(Field f:fields){
+			tableViewReturnedBooks.getColumns().add(new TableColumn(f.getName()));
+		}
+		listViewSelectedBook.setMaxSize(500, 450);
 	}
 
 	// parsing temporary arraylist to templibrary list with book model
@@ -151,10 +154,8 @@ public class App extends Application {
 			} else {
 				inventoryNumberValue = inventoryNumberInput.substring(0, inventoryNumberInput.length() - 2);
 			}
-
 			int inventoryNumber = Integer.parseInt(inventoryNumberValue);
 			String publisherName = readFromFile.get(indexOfFirstEntry++);
-
 			Year yearOfPublishing;
 			// skip if there is not year of publishing
 			if (readFromFile.get(indexOfFirstEntry).equals("")) {
@@ -163,7 +164,6 @@ public class App extends Application {
 			} else {
 				yearOfPublishing = Year.parse(readFromFile.get(indexOfFirstEntry++));
 			}
-
 			String edition = readFromFile.get(indexOfFirstEntry++);
 			String nameOfWriterOriginal = readFromFile.get(indexOfFirstEntry++);
 			String writer = readFromFile.get(indexOfFirstEntry++);
@@ -178,7 +178,6 @@ public class App extends Application {
 			if (readFromFile.get(indexOfFirstEntry).equals("")) {
 				indexOfFirstEntry++;
 			}
-
 			Book book = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
 					bookOrigin, bookLocation);
 			tempLibrary.add(book);
@@ -209,7 +208,6 @@ public class App extends Application {
 		String line;
 		outerloop: while (indexOfFirstEntry != readFromFile.size()) {
 			line = readFromFile.get(indexOfFirstEntry);
-
 			// if string contains "1. ", it is the index of the first entry of
 			// the book in txt file
 			if (line.equals("1. ")) {
@@ -217,7 +215,6 @@ public class App extends Application {
 			}
 			indexOfFirstEntry++;
 		}
-
 		return indexOfFirstEntry;
 	}
 
