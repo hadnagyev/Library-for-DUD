@@ -63,16 +63,16 @@ public class App extends Application {
 		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
 		txtFieldIdNumber.setOnKeyPressed(ke -> {
-				if (ke.getCode().equals(KeyCode.ENTER)) {
-					btnSearch.fire();
-				}
-			
+			if (ke.getCode().equals(KeyCode.ENTER)) {
+				btnSearch.fire();
+			}
+
 		});
 		txtFieldBookTitle.setOnKeyPressed(ke -> {
-				if (ke.getCode().equals(KeyCode.ENTER)) {
-					btnSearch.fire();
-				}
-			
+			if (ke.getCode().equals(KeyCode.ENTER)) {
+				btnSearch.fire();
+			}
+
 		});
 	}
 
@@ -88,19 +88,21 @@ public class App extends Application {
 		btnSearch.setOnAction(e -> {
 			ArrayList<Book> booksFound = new ArrayList<Book>();
 			//only execute if txtfieldTitle has value
-			if (txtFieldBookTitle.getText() != null && !txtFieldBookTitle.getText().isEmpty()) {
-				booksFound = library.getBookByTitle(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookByOriginalTitle(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookByPublisherName(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookByEdition(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookByWriter(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookBylanguage(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookBygenre(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookByNameOfWriterOriginal(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookBybookCondition(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookBybookOrigin(booksFound, txtFieldBookTitle.getText());
-				booksFound = library.getBookBybookLocation(booksFound, txtFieldBookTitle.getText());
+			String txtSearch = txtFieldBookTitle.getText();
+			if (txtSearch != null && !txtSearch.isEmpty()) {
+				booksFound = library.getBookByTitle(booksFound, txtSearch);
+				booksFound = library.getBookByOriginalTitle(booksFound, txtSearch);
+				booksFound = library.getBookByPublisherName(booksFound, txtSearch);
+				booksFound = library.getBookByEdition(booksFound, txtSearch);
+				booksFound = library.getBookByWriter(booksFound, txtSearch);
+				booksFound = library.getBookByLanguage(booksFound, txtSearch);
+				booksFound = library.getBookByGenre(booksFound, txtSearch);
+				booksFound = library.getBookByNameOfWriterOriginal(booksFound, txtSearch);
+				booksFound = library.getBookByBookCondition(booksFound, txtSearch);
+				booksFound = library.getBookByBookOrigin(booksFound, txtSearch);
+				booksFound = library.getBookByBookLocation(booksFound, txtSearch);
 			}
+
 
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
