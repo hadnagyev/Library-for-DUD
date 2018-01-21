@@ -2,7 +2,7 @@ package rs.dud.library.model;
 
 import java.util.ArrayList;
 
-import util.LoadFromFile;
+import rs.dud.library.util.LoadFromFile;
 
 public class Library {
 	ArrayList<Book> books = new ArrayList<Book>();

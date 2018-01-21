@@ -1,4 +1,4 @@
-package util;
+package rs.dud.library.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
