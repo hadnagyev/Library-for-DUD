@@ -2,13 +2,17 @@ package rs.dud.library.model;
 
 import java.util.ArrayList;
 
+import util.LoadFromFile;
+
 public class Library {
 	ArrayList<Book> books = new ArrayList<Book>();
 	String libraryOwner;
 
-	public Library(ArrayList<Book> books, String libraryOwner) {
+	public Library(String libraryOwner) {
 		super();
-		this.books = books;
+		LoadFromFile lf = new LoadFromFile();
+		books = lf.getTempLibrary();
+		System.out.println(books);
 		this.libraryOwner = libraryOwner;
 	}
 

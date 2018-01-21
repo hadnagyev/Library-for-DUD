@@ -2,15 +2,12 @@ package rs.dud.library.main;
 
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,9 +27,9 @@ import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
 public class App extends Application {
-	ArrayList<String> readFromFile = new ArrayList<String>();
-	ArrayList<Book> tempLibrary = new ArrayList<Book>();
-	String file = "POPIS KNJIGA najnoviji.txt";
+	//	ArrayList<String> readFromFile = new ArrayList<String>();
+	//	ArrayList<Book> tempLibrary = new ArrayList<Book>();
+	//	String file = "POPIS KNJIGA najnoviji.txt";
 
 	Button btnListAllBooks = new Button("List all books");
 	Button btnSearch = new Button("Search");
@@ -48,13 +45,10 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		App app = new App();
-		Library library = new Library(app.tempLibrary, "Svetislav");// TODO hard coded library owner, fix it, maybe not even needed
-		app.readFromFile();//populate arraylist from txt file provided
-		app.fillBooksToLibrary(app.findFirstEntry()); //find row of the first book entry
+		Library library = new Library("Svetislav");
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 		setUpButtons(library);
-		setUpTableViewreaction();
+		setUpTableViewReaction();
 		setUpTxtFields();
 		setUpGpane();
 		primaryStage.setScene(new Scene(gPane, 1900, 800));//size of the window
@@ -77,14 +71,16 @@ public class App extends Application {
 			}
 		});
 	}
-	private void setUpTableViewreaction(){
-		tableViewReturnedBooks.setOnMouseClicked(e ->{
+
+	private void setUpTableViewReaction() {
+		tableViewReturnedBooks.setOnMouseClicked(e -> {
 			ArrayList<Book> list = new ArrayList<Book>();
 			list.add(tableViewReturnedBooks.getSelectionModel().getSelectedItem());
 			listViewSelectedBook.setItems(FXCollections.observableArrayList(list));
-			});
-		
+		});
+
 	}
+
 	private void setUpButtons(Library library) {
 		// list all books button
 		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
@@ -116,18 +112,18 @@ public class App extends Application {
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
 				booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
-				
+
 			}
 			//if only one item found in tableview how it immediatelly in listview, otherwise clear listview
-			if(booksFound.size()<2&&booksFound.size()>0){
+			if (booksFound.size() < 2 && booksFound.size() > 0) {
 				listViewSelectedBook.setItems(FXCollections.observableArrayList(booksFound));
-			}else{
+			} else {
 				listViewSelectedBook.getItems().clear();
 			}
 			booksFound.sort(Comparator.comparing(Book::getId));
 			ObservableList<Book> observableList2 = FXCollections.observableList(booksFound);
 			tableViewReturnedBooks.setItems(observableList2);
-			
+
 		});
 	}
 
@@ -159,85 +155,6 @@ public class App extends Application {
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);
 		gPane.getChildren().add(listViewSelectedBook);
-		tableViewReturnedBooks.setMaxSize(1700,340);
+		tableViewReturnedBooks.setMaxSize(1700, 340);
 	}
-
-	// parsing temporary arraylist to templibrary list with book model
-	private void fillBooksToLibrary(int indexOfFirstEntry) {
-		while (indexOfFirstEntry != readFromFile.size()) {
-			String idInput = readFromFile.get(indexOfFirstEntry++);
-			String idNumber = idInput.substring(0, idInput.length() - 2); // erasing ". " at the end of the String in id number
-			Integer id = Integer.valueOf(idNumber);
-			String inventoryNumberInput = readFromFile.get(indexOfFirstEntry++);
-			String inventoryNumberValue;
-			// skip if there is no inventory number
-			if (inventoryNumberInput.equals("")) {
-				inventoryNumberValue = "0";
-			} else {
-				inventoryNumberValue = inventoryNumberInput.substring(0, inventoryNumberInput.length() - 2);
-			}
-			int inventoryNumber = Integer.parseInt(inventoryNumberValue);
-			String publisherName = readFromFile.get(indexOfFirstEntry++);
-			Year yearOfPublishing;
-			// skip if there is not year of publishing
-			if (readFromFile.get(indexOfFirstEntry).equals("")) {
-				yearOfPublishing = null;
-				indexOfFirstEntry++;
-			} else {
-				yearOfPublishing = Year.parse(readFromFile.get(indexOfFirstEntry++));
-			}
-			String edition = readFromFile.get(indexOfFirstEntry++);
-			String nameOfWriterOriginal = readFromFile.get(indexOfFirstEntry++);
-			String writer = readFromFile.get(indexOfFirstEntry++);
-			String originalTitle = readFromFile.get(indexOfFirstEntry++);
-			String title = readFromFile.get(indexOfFirstEntry++);
-			String language = readFromFile.get(indexOfFirstEntry++);
-			String writingSystem = readFromFile.get(indexOfFirstEntry++);
-			String genre = readFromFile.get(indexOfFirstEntry++);
-			String bookCondition = readFromFile.get(indexOfFirstEntry++);
-			String bookOrigin = readFromFile.get(indexOfFirstEntry++);
-			String bookLocation = readFromFile.get(indexOfFirstEntry++);
-			if (readFromFile.get(indexOfFirstEntry).equals("")) {
-				indexOfFirstEntry++;
-			}
-			Book book = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
-					bookOrigin, bookLocation);
-			tempLibrary.add(book);
-
-			// end if there is "id number" in the string which means it is the
-			// bottom of the table got from file
-			if (readFromFile.get(indexOfFirstEntry).equals("R.br.")) {
-				break;
-			}
-		}
-	}
-
-	// populate arraylist from txt file
-	private void readFromFile() {
-		try (Stream<String> stream = Files.lines(Paths.get(file))) {
-			stream.forEach(readFromFile::add);
-		} catch (UnsupportedEncodingException e) {
-			System.out.println("Unsuported encoding");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// finding first entry in the txt file (starts with "1. " when exporting
-	// from .doc to .txt using openoffice
-	private int findFirstEntry() {
-		int indexOfFirstEntry = 0;
-		String line;
-		outerloop: while (indexOfFirstEntry != readFromFile.size()) {
-			line = readFromFile.get(indexOfFirstEntry);
-			// if string contains "1. ", it is the index of the first entry of
-			// the book in txt file
-			if (line.equals("1. ")) {
-				break outerloop;
-			}
-			indexOfFirstEntry++;
-		}
-		return indexOfFirstEntry;
-	}
-
 }
