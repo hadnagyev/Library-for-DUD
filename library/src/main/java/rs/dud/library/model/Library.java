@@ -10,9 +10,7 @@ public class Library {
 
 	public Library(String libraryOwner) {
 		super();
-		LoadFromFile lf = new LoadFromFile();
-		books = lf.getTempLibrary();
-		System.out.println(books);
+		books = new LoadFromFile().getTempLibrary();
 		this.libraryOwner = libraryOwner;
 	}
 

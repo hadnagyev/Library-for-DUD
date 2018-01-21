@@ -2,7 +2,6 @@ package rs.dud.library.main;
 
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -20,17 +19,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
 public class App extends Application {
-	//	ArrayList<String> readFromFile = new ArrayList<String>();
-	//	ArrayList<Book> tempLibrary = new ArrayList<Book>();
-	//	String file = "POPIS KNJIGA najnoviji.txt";
-
 	Button btnListAllBooks = new Button("List all books");
 	Button btnSearch = new Button("Search");
 	TextField txtFieldIdNumber = new TextField();
@@ -38,6 +32,8 @@ public class App extends Application {
 	GridPane gPane = new GridPane();
 	ListView<Book> listViewSelectedBook = new ListView<Book>();
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
+	String libraryOwner = "Svetislav";
+	Library library = new Library(libraryOwner);
 
 	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
 		launch(args);
@@ -45,9 +41,8 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Library library = new Library("Svetislav");
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
-		setUpButtons(library);
+		setUpButtons();
 		setUpTableViewReaction();
 		setUpTxtFields();
 		setUpGpane();
@@ -60,15 +55,11 @@ public class App extends Application {
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
-		txtFieldIdNumber.setOnKeyPressed(ke -> {
-			if (ke.getCode().equals(KeyCode.ENTER)) {
+		txtFieldIdNumber.setOnKeyReleased(ke -> {
 				btnSearch.fire();
-			}
 		});
-		txtFieldBookTitle.setOnKeyPressed(ke -> {
-			if (ke.getCode().equals(KeyCode.ENTER)) {
+		txtFieldBookTitle.setOnKeyReleased(ke -> {
 				btnSearch.fire();
-			}
 		});
 	}
 
@@ -81,7 +72,7 @@ public class App extends Application {
 
 	}
 
-	private void setUpButtons(Library library) {
+	private void setUpButtons() {
 		// list all books button
 		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 		btnListAllBooks.setOnAction(e -> {
@@ -90,7 +81,6 @@ public class App extends Application {
 
 		});
 		//list Book by specific id that user typed in txtFieldIdNumber
-		//TODO make universal search, to find entered data in all fields and mark it in the table what field returned a result, maybe bold font on that particular entry
 		btnSearch.setOnAction(e -> {
 			ArrayList<Book> booksFound = new ArrayList<Book>();
 			//only execute if txtfieldTitle has value
@@ -150,7 +140,7 @@ public class App extends Application {
 		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
 		gPane.getChildren().add(btnListAllBooks);
-		gPane.getChildren().add(btnSearch);
+		//gPane.getChildren().add(btnSearch);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);

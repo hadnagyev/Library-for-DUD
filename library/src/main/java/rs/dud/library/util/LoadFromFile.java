@@ -15,16 +15,21 @@ public class LoadFromFile {
 	ArrayList<Book> tempLibrary = new ArrayList<Book>();
 	String file = "POPIS KNJIGA najnoviji.txt";
 
-	public ArrayList<Book> loadFromFile() {
+	public ArrayList<Book> getTempLibrary() {
 		readFromFile();
 		fillBooksToLibrary(findFirstEntry());
 		return tempLibrary;
-
 	}
 
-	public ArrayList<Book> getTempLibrary() {
-		loadFromFile();
-		return tempLibrary;
+	// populate arraylist from txt file
+	private void readFromFile() {
+		try (Stream<String> stream = Files.lines(Paths.get(file))) {
+			stream.forEach(readFromFile::add);
+		} catch (UnsupportedEncodingException e) {
+			System.out.println("Unsuported encoding");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// finding first entry in the txt file (starts with "1. " when exporting
@@ -42,17 +47,6 @@ public class LoadFromFile {
 			indexOfFirstEntry++;
 		}
 		return indexOfFirstEntry;
-	}
-
-	// populate arraylist from txt file
-	private void readFromFile() {
-		try (Stream<String> stream = Files.lines(Paths.get(file))) {
-			stream.forEach(readFromFile::add);
-		} catch (UnsupportedEncodingException e) {
-			System.out.println("Unsuported encoding");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	// parsing temporary arraylist to templibrary list with book model
@@ -96,7 +90,6 @@ public class LoadFromFile {
 			Book book = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
 					bookOrigin, bookLocation);
 			tempLibrary.add(book);
-			System.out.println(book);
 
 			// end if there is "id number" in the string which means it is the
 			// bottom of the table got from file
