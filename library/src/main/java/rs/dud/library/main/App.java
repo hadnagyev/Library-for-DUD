@@ -2,16 +2,17 @@ package rs.dud.library.main;
 
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -27,15 +28,21 @@ import javafx.stage.Stage;
 public class App extends Application {
 	Button btnListAllBooks = new Button("List all books");
 	Button btnSearch = new Button("Search");
+	Button btnAddNewBook = new Button("New Book");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
+	TextField txtFieldAddBookID = new TextField();
+	TextField txtFieldAddBookwriter = new TextField();
+	TextField txtFieldInventoryNumber = new TextField();
+	TextField txtFieldPublisherName = new TextField();
 	GridPane gPane = new GridPane();
 	ListView<Book> listViewSelectedBook = new ListView<Book>();
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
 	String libraryOwner = "Svetislav";
 	Library library = new Library(libraryOwner);
+	Group group = new Group();
 
-	public static void main(String[] args) throws IOException, UnsupportedEncodingException {
+	public static void main(String[] args) {
 		launch(args);
 	}
 
@@ -46,7 +53,7 @@ public class App extends Application {
 		setUpTableViewReaction();
 		setUpTxtFields();
 		setUpGpane();
-		primaryStage.setScene(new Scene(gPane, 1900, 800));//size of the window
+		primaryStage.setScene(new Scene(gPane, 1900, 850));//size of the window
 		primaryStage.show();
 	}
 
@@ -56,10 +63,10 @@ public class App extends Application {
 		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
 		txtFieldIdNumber.setOnKeyReleased(ke -> {
-				btnSearch.fire();
+			btnSearch.fire();
 		});
 		txtFieldBookTitle.setOnKeyReleased(ke -> {
-				btnSearch.fire();
+			btnSearch.fire();
 		});
 	}
 
@@ -69,7 +76,6 @@ public class App extends Application {
 			list.add(tableViewReturnedBooks.getSelectionModel().getSelectedItem());
 			listViewSelectedBook.setItems(FXCollections.observableArrayList(list));
 		});
-
 	}
 
 	private void setUpButtons() {
@@ -80,7 +86,11 @@ public class App extends Application {
 			tableViewReturnedBooks.setItems(observableList);
 
 		});
-		//list Book by specific id that user typed in txtFieldIdNumber
+
+		btnAddNewBook.setOnAction(e -> {
+			group.setVisible(true);
+		});
+		//list Book by specific id or text that user typed in txtFields
 		btnSearch.setOnAction(e -> {
 			ArrayList<Book> booksFound = new ArrayList<Book>();
 			//only execute if txtfieldTitle has value
@@ -101,8 +111,10 @@ public class App extends Application {
 			//adding books returned with id search
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
-				booksFound.add(library.getBooks().get(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
-
+				booksFound.add(library.getBookByID(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
+				if (library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())) != null) {
+					booksFound.add(library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())));
+				}
 			}
 			//if only one item found in tableview how it immediatelly in listview, otherwise clear listview
 			if (booksFound.size() < 2 && booksFound.size() > 0) {
@@ -121,7 +133,7 @@ public class App extends Application {
 		//create field names in table view from Book class
 		Field[] fields = Book.class.getDeclaredFields();//get all variables in Book
 		for (Field f : fields) {
-			TableColumn<Book, ?> columnName = new TableColumn<Book, Book>(f.getName());
+			TableColumn<Book, Book> columnName = new TableColumn<Book, Book>(f.getName());
 			columnName.setMinWidth(110);
 			columnName.setCellValueFactory(new PropertyValueFactory<>(f.getName()));
 			tableViewReturnedBooks.getColumns().add(columnName);
@@ -130,21 +142,39 @@ public class App extends Application {
 		gPane.setHgap(5);//gap between columns
 		gPane.setPadding(new Insets(20, 20, 20, 20)); //padding from all 4 sides
 		gPane.getColumnConstraints().add(new ColumnConstraints(1700)); //limiting first column width
-		gPane.getRowConstraints().add(new RowConstraints(700));//limiting first row height
+		gPane.getRowConstraints().add(new RowConstraints(400));//limiting first row height
+		gPane.getRowConstraints().add(new RowConstraints(400));
+		GridPane.setColumnIndex(btnListAllBooks, 1);//set button to specific column
+		GridPane.setColumnIndex(btnAddNewBook, 0);
+		GridPane.setRowIndex(btnAddNewBook, 1);
+		GridPane.setRowIndex(group, 1);
+
+		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
+		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
+		GridPane.setConstraints(listViewSelectedBook, 0, 1);
+
+		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfieldIDnumber for id input
 		GridPane.setValignment(listViewSelectedBook, VPos.BOTTOM);
 		GridPane.setValignment(tableViewReturnedBooks, VPos.TOP);
-		GridPane.setColumnIndex(btnListAllBooks, 1);//set button to specific column
-		GridPane.setConstraints(btnSearch, 1, 2);
-		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
-		GridPane.setValignment(txtFieldIdNumber, VPos.BOTTOM);//align the textfieldIDnumber for id input
-		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
+		GridPane.setValignment(btnAddNewBook, VPos.TOP);
+		GridPane.setValignment(group, VPos.BOTTOM);
+
+		GridPane.setHalignment(btnAddNewBook, HPos.CENTER);
+		GridPane.setHalignment(group, HPos.CENTER);
+		gPane.setGridLinesVisible(true);
 		gPane.getChildren().add(btnListAllBooks);
-		//gPane.getChildren().add(btnSearch);
+		gPane.getChildren().add(btnAddNewBook);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);
 		gPane.getChildren().add(listViewSelectedBook);
+		gPane.getChildren().add(group);
+
+		group.getChildren().addAll(txtFieldAddBookID, txtFieldInventoryNumber, txtFieldAddBookwriter, txtFieldPublisherName);
+		group.setVisible(false);
 		tableViewReturnedBooks.setMaxSize(1700, 340);
+		listViewSelectedBook.setMaxSize(500, 330);
+
 	}
 }

@@ -17,6 +17,19 @@ public class Library {
 	public ArrayList<Book> getBooks() {
 		return books;
 	}
+	
+	public Book getBookByID(int id){
+		return books.get(id);
+	}
+	public Book getBookByInventoryNumber(int invNumber){
+		for (Book book : books) {
+			if (book.getInventoryNumber()==invNumber) {
+				return book;
+			}
+		}
+		return null;
+
+	}
 
 	public void setBooks(ArrayList<Book> books) {
 		this.books = books;
