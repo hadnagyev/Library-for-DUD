@@ -175,6 +175,7 @@ public class App extends Application {
 		group.setVisible(false);
 		tableViewReturnedBooks.setMaxSize(1700, 340);
 		listViewSelectedBook.setMaxSize(500, 330);
-
+		group.setAutoSizeChildren(true);
+		
 	}
 }
