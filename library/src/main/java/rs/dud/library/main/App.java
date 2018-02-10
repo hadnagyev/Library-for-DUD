@@ -31,16 +31,26 @@ public class App extends Application {
 	Button btnAddNewBook = new Button("New Book");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
-	TextField txtFieldAddBookID = new TextField();
-	TextField txtFieldAddBookwriter = new TextField();
-	TextField txtFieldInventoryNumber = new TextField();
-	TextField txtFieldPublisherName = new TextField();
+
 	GridPane gPane = new GridPane();
 	ListView<Book> listViewSelectedBook = new ListView<Book>();
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
 	String libraryOwner = "Svetislav";
 	Library library = new Library(libraryOwner);
 	Group group = new Group();
+	TextField txtFieldAddBookID = new TextField("BookID");
+	TextField txtFieldAddInventoryNumber = new TextField("InventoryNumber");
+	TextField txtFieldAddPublisherName = new TextField("PublisherName");
+	TextField txtFieldAddEdition = new TextField("Edition");
+	TextField txtFieldNameOfWriterOriginal = new TextField("NameOfWriterOriginal");
+	TextField txtFieldAddBookWriter = new TextField("BookWriter");
+	TextField txtFieldAddTitle = new TextField("Title");
+	TextField txtFieldAddLanguage = new TextField("Language");
+	TextField txtFieldAddWritingSystem = new TextField("WritingSystem");
+	TextField txtFieldAddGenre = new TextField("Genre");
+	TextField txtFieldAddBookCondition = new TextField("BookCondition");
+	TextField txtFieldAddBookOrigin = new TextField("BookOrigin");
+	TextField txtFieldAddBookLocation = new TextField("BookLocation");
 
 	public static void main(String[] args) {
 		launch(args);
@@ -62,9 +72,8 @@ public class App extends Application {
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
-		txtFieldIdNumber.setOnKeyReleased(ke -> {
-			btnSearch.fire();
-		});
+		txtFieldIdNumber.setOnKeyReleased(ke -> btnSearch.fire());
+		
 		txtFieldBookTitle.setOnKeyReleased(ke -> {
 			btnSearch.fire();
 		});
@@ -82,12 +91,11 @@ public class App extends Application {
 		// list all books button
 		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 		btnListAllBooks.setOnAction(e -> {
-
 			tableViewReturnedBooks.setItems(observableList);
-
 		});
 
 		btnAddNewBook.setOnAction(e -> {
+			arrangeFieldsAddNewBook();
 			group.setVisible(true);
 		});
 		//list Book by specific id or text that user typed in txtFields
@@ -128,6 +136,23 @@ public class App extends Application {
 
 		});
 	}
+	//arrange txtFields for Add new book
+	private void arrangeFieldsAddNewBook() {
+		int x = 0;
+		int y = -350;
+		int count = 0;
+		for(Node n:group.getChildren()){
+			count++;
+			n.relocate(x, y);
+			y+=40;
+			if(count==7){
+				x=200;
+				y=-350;
+			}
+		}
+		
+		
+	}
 
 	private void setUpGpane() {
 		//create field names in table view from Book class
@@ -158,7 +183,7 @@ public class App extends Application {
 		GridPane.setValignment(tableViewReturnedBooks, VPos.TOP);
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
 		GridPane.setValignment(btnAddNewBook, VPos.TOP);
-		GridPane.setValignment(group, VPos.BOTTOM);
+		GridPane.setValignment(group, VPos.CENTER);
 
 		GridPane.setHalignment(btnAddNewBook, HPos.CENTER);
 		GridPane.setHalignment(group, HPos.CENTER);
@@ -171,11 +196,14 @@ public class App extends Application {
 		gPane.getChildren().add(listViewSelectedBook);
 		gPane.getChildren().add(group);
 
-		group.getChildren().addAll(txtFieldAddBookID, txtFieldInventoryNumber, txtFieldAddBookwriter, txtFieldPublisherName);
+
+		group.getChildren().addAll(txtFieldAddBookID, txtFieldAddInventoryNumber, txtFieldAddBookWriter, txtFieldAddPublisherName, txtFieldAddEdition, txtFieldNameOfWriterOriginal, txtFieldAddTitle,
+				txtFieldAddLanguage, txtFieldAddWritingSystem, txtFieldAddGenre, txtFieldAddBookCondition, txtFieldAddBookOrigin, txtFieldAddBookLocation);
 		group.setVisible(false);
+		
 		tableViewReturnedBooks.setMaxSize(1700, 340);
 		listViewSelectedBook.setMaxSize(500, 330);
 		group.setAutoSizeChildren(true);
-		
+
 	}
 }
