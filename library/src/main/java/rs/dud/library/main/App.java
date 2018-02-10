@@ -3,8 +3,12 @@ package rs.dud.library.main;
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
 import java.lang.reflect.Field;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import com.sun.org.apache.xerces.internal.impl.dv.xs.YearDV;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,7 +32,9 @@ import javafx.stage.Stage;
 public class App extends Application {
 	Button btnListAllBooks = new Button("List all books");
 	Button btnSearch = new Button("Search");
-	Button btnAddNewBook = new Button("New Book");
+	Button btnNewBook = new Button("New Book");
+	Button btnSaveNewBook = new Button("Save new book");
+	Button btnPopulateFileds = new Button("Populate all fields with default values");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
 
@@ -37,20 +43,22 @@ public class App extends Application {
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
 	String libraryOwner = "Svetislav";
 	Library library = new Library(libraryOwner);
-	Group group = new Group();
-	TextField txtFieldAddBookID = new TextField("BookID");
-	TextField txtFieldAddInventoryNumber = new TextField("InventoryNumber");
-	TextField txtFieldAddPublisherName = new TextField("PublisherName");
-	TextField txtFieldAddEdition = new TextField("Edition");
-	TextField txtFieldNameOfWriterOriginal = new TextField("NameOfWriterOriginal");
-	TextField txtFieldAddBookWriter = new TextField("BookWriter");
-	TextField txtFieldAddTitle = new TextField("Title");
-	TextField txtFieldAddLanguage = new TextField("Language");
-	TextField txtFieldAddWritingSystem = new TextField("WritingSystem");
-	TextField txtFieldAddGenre = new TextField("Genre");
-	TextField txtFieldAddBookCondition = new TextField("BookCondition");
-	TextField txtFieldAddBookOrigin = new TextField("BookOrigin");
-	TextField txtFieldAddBookLocation = new TextField("BookLocation");
+	Group groupAddNewBook = new Group();
+	TextField txtFieldAddBookID = new TextField();
+	TextField txtFieldAddInventoryNumber = new TextField();
+	TextField txtFieldAddPublisherName = new TextField();
+	TextField txtFieldAddYearOfPublishing = new TextField();
+	TextField txtFieldAddEdition = new TextField();
+	TextField txtFieldAddNameOfWriterOriginal = new TextField();
+	TextField txtFieldAddBookWriter = new TextField();
+	TextField txtFieldAddOriginalTitle = new TextField();
+	TextField txtFieldAddTitle = new TextField();
+	TextField txtFieldAddLanguage = new TextField();
+	TextField txtFieldAddWritingSystem = new TextField();
+	TextField txtFieldAddGenre = new TextField();
+	TextField txtFieldAddBookCondition = new TextField();
+	TextField txtFieldAddBookOrigin = new TextField();
+	TextField txtFieldAddBookLocation = new TextField();
 
 	public static void main(String[] args) {
 		launch(args);
@@ -72,8 +80,27 @@ public class App extends Application {
 		txtFieldIdNumber.setPromptText("input id of the book");//initial text in the textfield
 		txtFieldBookTitle.setPromptText("input search parameter");//initial text in the textfield
 		//if enter gets pressed while txtfieldID has focus, button for listing that id is fired
+
+		//Add new book txtfields setting initial text
+		txtFieldAddBookID.setPromptText("ID");
+		txtFieldAddInventoryNumber.setPromptText("Inventory Number");
+		txtFieldAddPublisherName.setPromptText("Publisher Name");
+		txtFieldAddYearOfPublishing.setPromptText("Year of publishing");
+		txtFieldAddEdition.setPromptText("Edition");
+		txtFieldAddNameOfWriterOriginal.setPromptText("Writer Original");
+		txtFieldAddBookWriter.setPromptText("Writer");
+		txtFieldAddOriginalTitle.setPromptText("Original title");
+		txtFieldAddTitle.setPromptText("Title");
+		txtFieldAddLanguage.setPromptText("Language");
+		txtFieldAddWritingSystem.setPromptText("Writing System");
+		txtFieldAddGenre.setPromptText("Genre");
+		txtFieldAddBookCondition.setPromptText("Book Condition");
+		txtFieldAddBookOrigin.setPromptText("Book Origin");
+		txtFieldAddBookLocation.setPromptText("Book Location");
+
+		//set up dynamic search
 		txtFieldIdNumber.setOnKeyReleased(ke -> btnSearch.fire());
-		
+
 		txtFieldBookTitle.setOnKeyReleased(ke -> {
 			btnSearch.fire();
 		});
@@ -94,10 +121,14 @@ public class App extends Application {
 			tableViewReturnedBooks.setItems(observableList);
 		});
 
-		btnAddNewBook.setOnAction(e -> {
+		btnNewBook.setOnAction(e -> {
 			arrangeFieldsAddNewBook();
-			group.setVisible(true);
+			groupAddNewBook.setVisible(true);
+			//getting id of the last book in library and adding 1 for the new one
+			txtFieldAddBookID.setText(Integer.toString(library.getLastBook().getId() + 1));
+			txtFieldAddBookID.setDisable(true);
 		});
+
 		//list Book by specific id or text that user typed in txtFields
 		btnSearch.setOnAction(e -> {
 			ArrayList<Book> booksFound = new ArrayList<Book>();
@@ -116,6 +147,7 @@ public class App extends Application {
 				booksFound = library.getBookByBookOrigin(booksFound, txtSearch);
 				booksFound = library.getBookByBookLocation(booksFound, txtSearch);
 			}
+
 			//adding books returned with id search
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
 			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
@@ -124,6 +156,7 @@ public class App extends Application {
 					booksFound.add(library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())));
 				}
 			}
+
 			//if only one item found in tableview how it immediatelly in listview, otherwise clear listview
 			if (booksFound.size() < 2 && booksFound.size() > 0) {
 				listViewSelectedBook.setItems(FXCollections.observableArrayList(booksFound));
@@ -135,23 +168,60 @@ public class App extends Application {
 			tableViewReturnedBooks.setItems(observableList2);
 
 		});
+
+		btnSaveNewBook.setOnAction(e -> {
+			saveNewBook();
+		});
+		
+		btnPopulateFileds.setOnAction(e ->{
+			defaultValueOnAddNew();
+		});
 	}
+
+	private void defaultValueOnAddNew(){
+		if(txtFieldAddInventoryNumber.getText().isEmpty()){
+			txtFieldAddInventoryNumber.setText("0");
+		}
+	}
+	
+	private void saveNewBook() {
+		int id = Integer.parseInt(txtFieldAddBookID.getText());
+		int inventoryNumber = Integer.parseInt(txtFieldAddInventoryNumber.getText());
+		String publisherName = txtFieldAddPublisherName.getText();
+		Year yearOfPublishing = (!txtFieldAddYearOfPublishing.getText().isEmpty()) ? Year.parse(txtFieldAddYearOfPublishing.getText()):null;
+		String edition = txtFieldAddEdition.getText();
+		String nameOfWriterOriginal = txtFieldAddNameOfWriterOriginal.getText();
+		String writer = txtFieldAddBookWriter.getText();
+		String originalTitle = txtFieldAddOriginalTitle.getText();
+		String title = txtFieldAddTitle.getText();
+		String language = txtFieldAddLanguage.getText();
+		String writingSystem = txtFieldAddWritingSystem.getText();
+		String genre = txtFieldAddGenre.getText();
+		String bookCondition = txtFieldAddBookCondition.getText();
+		String bookOrigin = txtFieldAddBookOrigin.getText();
+		String bookLocation = txtFieldAddBookLocation.getText();
+
+		Book newBook = new Book(id,inventoryNumber,publisherName,yearOfPublishing,edition,nameOfWriterOriginal,
+				writer,originalTitle,title,language,writingSystem,genre,bookCondition,bookOrigin,bookLocation);
+		library.getBooks().add(newBook);
+	}
+
 	//arrange txtFields for Add new book
 	private void arrangeFieldsAddNewBook() {
 		int x = 0;
 		int y = -350;
 		int count = 0;
-		for(Node n:group.getChildren()){
+
+		for (Node n : groupAddNewBook.getChildren()) {
 			count++;
 			n.relocate(x, y);
-			y+=40;
-			if(count==7){
-				x=200;
-				y=-350;
+			y += 40;
+			if (count == 8) {
+				x = 200;
+				y = -350;
 			}
 		}
-		
-		
+
 	}
 
 	private void setUpGpane() {
@@ -170,9 +240,9 @@ public class App extends Application {
 		gPane.getRowConstraints().add(new RowConstraints(400));//limiting first row height
 		gPane.getRowConstraints().add(new RowConstraints(400));
 		GridPane.setColumnIndex(btnListAllBooks, 1);//set button to specific column
-		GridPane.setColumnIndex(btnAddNewBook, 0);
-		GridPane.setRowIndex(btnAddNewBook, 1);
-		GridPane.setRowIndex(group, 1);
+		GridPane.setColumnIndex(btnNewBook, 0);
+		GridPane.setRowIndex(btnNewBook, 1);
+		GridPane.setRowIndex(groupAddNewBook, 1);
 
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
 		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
@@ -182,28 +252,28 @@ public class App extends Application {
 		GridPane.setValignment(listViewSelectedBook, VPos.BOTTOM);
 		GridPane.setValignment(tableViewReturnedBooks, VPos.TOP);
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
-		GridPane.setValignment(btnAddNewBook, VPos.TOP);
-		GridPane.setValignment(group, VPos.CENTER);
+		GridPane.setValignment(btnNewBook, VPos.TOP);
+		GridPane.setValignment(groupAddNewBook, VPos.CENTER);
 
-		GridPane.setHalignment(btnAddNewBook, HPos.CENTER);
-		GridPane.setHalignment(group, HPos.CENTER);
+		GridPane.setHalignment(btnNewBook, HPos.CENTER);
+		GridPane.setHalignment(groupAddNewBook, HPos.CENTER);
 		gPane.setGridLinesVisible(true);
 		gPane.getChildren().add(btnListAllBooks);
-		gPane.getChildren().add(btnAddNewBook);
+		gPane.getChildren().add(btnNewBook);
 		gPane.getChildren().add(txtFieldIdNumber);
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);
 		gPane.getChildren().add(listViewSelectedBook);
-		gPane.getChildren().add(group);
+		gPane.getChildren().add(groupAddNewBook);
 
+		groupAddNewBook.getChildren().addAll(txtFieldAddBookID, txtFieldAddInventoryNumber, txtFieldAddBookWriter, txtFieldAddPublisherName, txtFieldAddYearOfPublishing, txtFieldAddEdition,
+				txtFieldAddNameOfWriterOriginal, txtFieldAddTitle, txtFieldAddLanguage, txtFieldAddWritingSystem, txtFieldAddGenre, txtFieldAddBookCondition, txtFieldAddBookOrigin,
+				txtFieldAddBookLocation, btnSaveNewBook,btnPopulateFileds);
+		groupAddNewBook.setVisible(false);
 
-		group.getChildren().addAll(txtFieldAddBookID, txtFieldAddInventoryNumber, txtFieldAddBookWriter, txtFieldAddPublisherName, txtFieldAddEdition, txtFieldNameOfWriterOriginal, txtFieldAddTitle,
-				txtFieldAddLanguage, txtFieldAddWritingSystem, txtFieldAddGenre, txtFieldAddBookCondition, txtFieldAddBookOrigin, txtFieldAddBookLocation);
-		group.setVisible(false);
-		
 		tableViewReturnedBooks.setMaxSize(1700, 340);
 		listViewSelectedBook.setMaxSize(500, 330);
-		group.setAutoSizeChildren(true);
+		groupAddNewBook.setAutoSizeChildren(true);
 
 	}
 }

@@ -18,6 +18,10 @@ public class Library {
 		return books;
 	}
 	
+	public Book getLastBook(){
+		return books.get(books.size()-1);
+	}
+	
 	public Book getBookByID(int id){
 		return books.get(id);
 	}
