@@ -3,12 +3,10 @@ package rs.dud.library.main;
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
 import java.lang.reflect.Field;
+import java.time.DateTimeException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Comparator;
-
-import com.sun.org.apache.xerces.internal.impl.dv.xs.YearDV;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +17,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,6 +26,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -35,6 +35,7 @@ public class App extends Application {
 	Button btnNewBook = new Button("New Book");
 	Button btnSaveNewBook = new Button("Save new book");
 	Button btnPopulateFileds = new Button("Populate all fields with default values");
+	Button btnDeleteSelectedBook = new Button("Delete selected book");
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
 
@@ -59,6 +60,8 @@ public class App extends Application {
 	TextField txtFieldAddBookCondition = new TextField();
 	TextField txtFieldAddBookOrigin = new TextField();
 	TextField txtFieldAddBookLocation = new TextField();
+	
+	Label lblNotValidYear = new Label("Year not valid");
 
 	public static void main(String[] args) {
 		launch(args);
@@ -115,6 +118,7 @@ public class App extends Application {
 	}
 
 	private void setUpButtons() {
+
 		// list all books button
 		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
 		btnListAllBooks.setOnAction(e -> {
@@ -127,6 +131,8 @@ public class App extends Application {
 			//getting id of the last book in library and adding 1 for the new one
 			txtFieldAddBookID.setText(Integer.toString(library.getLastBook().getId() + 1));
 			txtFieldAddBookID.setDisable(true);
+			btnNewBook.setDisable(true);
+			btnSaveNewBook.setDisable(false);
 		});
 
 		//list Book by specific id or text that user typed in txtFields
@@ -170,25 +176,57 @@ public class App extends Application {
 		});
 
 		btnSaveNewBook.setOnAction(e -> {
-			saveNewBook();
-		});
-		
-		btnPopulateFileds.setOnAction(e ->{
 			defaultValueOnAddNew();
+			if(saveNewBook()){
+				setUpButtons();
+				btnListAllBooks.fire();
+				btnNewBook.setDisable(false);
+				btnSaveNewBook.setDisable(true);
+			};
+
+		});
+
+		btnPopulateFileds.setOnAction(e -> {
+			defaultValueOnAddNew();
+		});
+
+		btnDeleteSelectedBook.setOnAction(e -> {
+			deleteSelectedBook();
+			setUpButtons();
+			btnListAllBooks.fire();
+		});
+		//hide warning for invalid year
+		txtFieldAddYearOfPublishing.setOnMouseClicked(e ->{
+			lblNotValidYear.setVisible(false);
 		});
 	}
 
-	private void defaultValueOnAddNew(){
-		if(txtFieldAddInventoryNumber.getText().isEmpty()){
+	private void deleteSelectedBook() {
+		listViewSelectedBook.getSelectionModel().selectFirst();
+		Book book = listViewSelectedBook.getSelectionModel().getSelectedItem();
+		listViewSelectedBook.getSelectionModel().clearSelection();
+		library.deleteBook(book.getId() - 1);
+		btnListAllBooks.fire();
+	}
+
+	private void defaultValueOnAddNew() {
+		if (txtFieldAddInventoryNumber.getText().isEmpty()) {
 			txtFieldAddInventoryNumber.setText("0");
 		}
+
 	}
-	
-	private void saveNewBook() {
+
+	private boolean saveNewBook() {
 		int id = Integer.parseInt(txtFieldAddBookID.getText());
 		int inventoryNumber = Integer.parseInt(txtFieldAddInventoryNumber.getText());
 		String publisherName = txtFieldAddPublisherName.getText();
-		Year yearOfPublishing = (!txtFieldAddYearOfPublishing.getText().isEmpty()) ? Year.parse(txtFieldAddYearOfPublishing.getText()):null;
+		try {
+			Year.parse(txtFieldAddYearOfPublishing.getText());
+		} catch (DateTimeException ex) {
+			lblNotValidYear.setVisible(true);
+			return false;
+		}
+		Year yearOfPublishing = (!txtFieldAddYearOfPublishing.getText().isEmpty()) ? Year.parse(txtFieldAddYearOfPublishing.getText()) : null;
 		String edition = txtFieldAddEdition.getText();
 		String nameOfWriterOriginal = txtFieldAddNameOfWriterOriginal.getText();
 		String writer = txtFieldAddBookWriter.getText();
@@ -201,15 +239,18 @@ public class App extends Application {
 		String bookOrigin = txtFieldAddBookOrigin.getText();
 		String bookLocation = txtFieldAddBookLocation.getText();
 
-		Book newBook = new Book(id,inventoryNumber,publisherName,yearOfPublishing,edition,nameOfWriterOriginal,
-				writer,originalTitle,title,language,writingSystem,genre,bookCondition,bookOrigin,bookLocation);
+		Book newBook = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
+				bookOrigin, bookLocation);
 		library.getBooks().add(newBook);
+		return true;
 	}
 
 	//arrange txtFields for Add new book
 	private void arrangeFieldsAddNewBook() {
+		//starting positions
 		int x = 0;
 		int y = -350;
+		//counter for rows, every nth item reset y and ofset x value
 		int count = 0;
 
 		for (Node n : groupAddNewBook.getChildren()) {
@@ -221,6 +262,8 @@ public class App extends Application {
 				y = -350;
 			}
 		}
+		lblNotValidYear.relocate(80, -185);
+		lblNotValidYear.setTextFill(Paint.valueOf("red"));
 
 	}
 
@@ -241,8 +284,10 @@ public class App extends Application {
 		gPane.getRowConstraints().add(new RowConstraints(400));
 		GridPane.setColumnIndex(btnListAllBooks, 1);//set button to specific column
 		GridPane.setColumnIndex(btnNewBook, 0);
+		GridPane.setColumnIndex(btnDeleteSelectedBook, 1);
 		GridPane.setRowIndex(btnNewBook, 1);
 		GridPane.setRowIndex(groupAddNewBook, 1);
+		GridPane.setRowIndex(btnDeleteSelectedBook, 1);
 
 		GridPane.setConstraints(txtFieldIdNumber, 1, 0);//set text field to specific column and row
 		GridPane.setConstraints(txtFieldBookTitle, 1, 1);
@@ -254,6 +299,7 @@ public class App extends Application {
 		GridPane.setValignment(txtFieldBookTitle, VPos.BOTTOM);
 		GridPane.setValignment(btnNewBook, VPos.TOP);
 		GridPane.setValignment(groupAddNewBook, VPos.CENTER);
+		GridPane.setValignment(btnDeleteSelectedBook, VPos.CENTER);
 
 		GridPane.setHalignment(btnNewBook, HPos.CENTER);
 		GridPane.setHalignment(groupAddNewBook, HPos.CENTER);
@@ -261,6 +307,7 @@ public class App extends Application {
 		gPane.getChildren().add(btnListAllBooks);
 		gPane.getChildren().add(btnNewBook);
 		gPane.getChildren().add(txtFieldIdNumber);
+		gPane.getChildren().add(btnDeleteSelectedBook);
 		gPane.getChildren().add(txtFieldBookTitle);
 		gPane.getChildren().add(tableViewReturnedBooks);
 		gPane.getChildren().add(listViewSelectedBook);
@@ -268,8 +315,10 @@ public class App extends Application {
 
 		groupAddNewBook.getChildren().addAll(txtFieldAddBookID, txtFieldAddInventoryNumber, txtFieldAddBookWriter, txtFieldAddPublisherName, txtFieldAddYearOfPublishing, txtFieldAddEdition,
 				txtFieldAddNameOfWriterOriginal, txtFieldAddTitle, txtFieldAddLanguage, txtFieldAddWritingSystem, txtFieldAddGenre, txtFieldAddBookCondition, txtFieldAddBookOrigin,
-				txtFieldAddBookLocation, btnSaveNewBook,btnPopulateFileds);
+				txtFieldAddBookLocation, btnSaveNewBook, btnPopulateFileds,lblNotValidYear);
 		groupAddNewBook.setVisible(false);
+		btnSaveNewBook.setDisable(true);
+		lblNotValidYear.setVisible(false);
 
 		tableViewReturnedBooks.setMaxSize(1700, 340);
 		listViewSelectedBook.setMaxSize(500, 330);

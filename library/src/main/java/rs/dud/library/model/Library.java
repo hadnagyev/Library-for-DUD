@@ -18,6 +18,10 @@ public class Library {
 		return books;
 	}
 	
+	public void deleteBook(int index){
+		books.remove(index);
+	}
+	
 	public Book getLastBook(){
 		return books.get(books.size()-1);
 	}
