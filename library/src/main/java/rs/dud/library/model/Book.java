@@ -1,12 +1,14 @@
 package rs.dud.library.model;
 
+import java.io.Serializable;
 import java.time.Year;
 
-public class Book {
+public class Book implements Serializable {
+	private static final long serialVersionUID = 1L;
 	int id; // redni broj in excel file
 	int inventoryNumber; // inv. broj
 	String publisherName; // Izdavac
-	Year yearOfPublishing; // godina izdavanja
+	int yearOfPublishing; // godina izdavanja
 	String edition; // edicija
 	String nameOfWriterOriginal; // ime pisca izvorno
 	String writer; // pisac
@@ -19,7 +21,7 @@ public class Book {
 	String bookOrigin; // poreklo knjige
 	String bookLocation; // gde se nalazi
 
-	public Book(int id, int inventoryNumber, String publisherName, Year yearOfPublishing, String edition, String nameOfWriterOriginal, String writer, String originalTitle, String title,
+	public Book(int id, int inventoryNumber, String publisherName, int yearOfPublishing, String edition, String nameOfWriterOriginal, String writer, String originalTitle, String title,
 			String language, String writingSystem, String genre, String bookCondition, String bookOrigin, String bookLocation) {
 		super();
 		this.id = id;
@@ -37,6 +39,9 @@ public class Book {
 		this.bookCondition = bookCondition;
 		this.bookOrigin = bookOrigin;
 		this.bookLocation = bookLocation;
+	}
+	public Book(){
+		
 	}
 
 	@Override
@@ -72,11 +77,11 @@ public class Book {
 		this.publisherName = publisherName;
 	}
 
-	public Year getYearOfPublishing() {
+	public int getYearOfPublishing() {
 		return yearOfPublishing;
 	}
 
-	public void setYearOfPublishing(Year yearOfPublishing) {
+	public void setYearOfPublishing(int yearOfPublishing) {
 		this.yearOfPublishing = yearOfPublishing;
 	}
 

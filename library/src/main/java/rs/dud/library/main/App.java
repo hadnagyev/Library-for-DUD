@@ -2,6 +2,8 @@ package rs.dud.library.main;
 
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
+import rs.dud.library.util.WriterReader;
+
 import java.lang.reflect.Field;
 import java.time.DateTimeException;
 import java.time.Year;
@@ -76,6 +78,10 @@ public class App extends Application {
 		setUpGpane();
 		primaryStage.setScene(new Scene(gPane, 1900, 850));//size of the window
 		primaryStage.show();
+		
+		WriterReader wr = new WriterReader();
+		wr.writeToFile(library.getBooks());
+
 	}
 
 	private void setUpTxtFields() {
@@ -220,13 +226,8 @@ public class App extends Application {
 		int id = Integer.parseInt(txtFieldAddBookID.getText());
 		int inventoryNumber = Integer.parseInt(txtFieldAddInventoryNumber.getText());
 		String publisherName = txtFieldAddPublisherName.getText();
-		try {
-			Year.parse(txtFieldAddYearOfPublishing.getText());
-		} catch (DateTimeException ex) {
-			lblNotValidYear.setVisible(true);
-			return false;
-		}
-		Year yearOfPublishing = (!txtFieldAddYearOfPublishing.getText().isEmpty()) ? Year.parse(txtFieldAddYearOfPublishing.getText()) : null;
+
+		int yearOfPublishing = Integer.parseInt(txtFieldAddYearOfPublishing.getText());
 		String edition = txtFieldAddEdition.getText();
 		String nameOfWriterOriginal = txtFieldAddNameOfWriterOriginal.getText();
 		String writer = txtFieldAddBookWriter.getText();
