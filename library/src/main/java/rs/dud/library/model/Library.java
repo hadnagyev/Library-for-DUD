@@ -1,20 +1,18 @@
 package rs.dud.library.model;
 
 import java.util.ArrayList;
-
-import rs.dud.library.util.LoadFromFile;
+import java.util.List;
 
 public class Library {
-	ArrayList<Book> books = new ArrayList<Book>();
+	List<Book> books = new ArrayList<Book>();
 	String libraryOwner;
-
-	public Library(String libraryOwner) {
+	public Library(ArrayList<Book> books,String libraryOwner) {
 		super();
-		books = new LoadFromFile().getTempLibrary();
+		this.books = books;
 		this.libraryOwner = libraryOwner;
 	}
 
-	public ArrayList<Book> getBooks() {
+	public List<Book> getBooks() {
 		return books;
 	}
 	
@@ -39,7 +37,7 @@ public class Library {
 
 	}
 
-	public void setBooks(ArrayList<Book> books) {
+	public void setBooks(List<Book> books) {
 		this.books = books;
 	}
 

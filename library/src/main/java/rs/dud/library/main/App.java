@@ -2,6 +2,9 @@ package rs.dud.library.main;
 
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
+import rs.dud.library.util.Database;
+import rs.dud.library.util.LoadFromFile;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,7 +44,8 @@ public class App extends Application {
 	ListView<Book> listViewSelectedBook = new ListView<Book>();
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
 	String libraryOwner = "Svetislav";
-	Library library = new Library(libraryOwner);
+	
+	Library library;
 	Group groupAddNewBook = new Group();
 	TextField txtFieldAddBookID = new TextField();
 	TextField txtFieldAddInventoryNumber = new TextField();
@@ -64,10 +68,17 @@ public class App extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
+	public void getBooksFromLegacy(){
+		LoadFromFile lf = new LoadFromFile();
+		library = new Library(lf.getTempLibrary(),libraryOwner);
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		getBooksFromLegacy();//use to get books from legacy doc file
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
+		Database.loadFromFile();
 		setUpButtons();
 		setUpTableViewReaction();
 		setUpTxtFields();
