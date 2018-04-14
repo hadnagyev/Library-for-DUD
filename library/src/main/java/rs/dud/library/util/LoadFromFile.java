@@ -65,7 +65,14 @@ public class LoadFromFile {
 			}
 			int inventoryNumber = Integer.parseInt(inventoryNumberValue);
 			String publisherName = readFromFile.get(indexOfFirstEntry++);
-			int yearOfPublishing=Integer.parseInt(readFromFile.get(indexOfFirstEntry++));
+			Year yearOfPublishing;
+			// skip if there is not year of publishing
+			if (readFromFile.get(indexOfFirstEntry).equals("")) {
+				yearOfPublishing = null;
+				indexOfFirstEntry++;
+			} else {
+				yearOfPublishing = Year.parse(readFromFile.get(indexOfFirstEntry++));
+			}
 			String edition = readFromFile.get(indexOfFirstEntry++);
 			String nameOfWriterOriginal = readFromFile.get(indexOfFirstEntry++);
 			String writer = readFromFile.get(indexOfFirstEntry++);

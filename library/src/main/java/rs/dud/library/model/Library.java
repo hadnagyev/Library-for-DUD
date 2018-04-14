@@ -1,34 +1,16 @@
 package rs.dud.library.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-
 import rs.dud.library.util.LoadFromFile;
-import rs.dud.library.util.WriterReader;
 
 public class Library {
 	ArrayList<Book> books = new ArrayList<Book>();
 	String libraryOwner;
-	WriterReader wr = new WriterReader();
 
 	public Library(String libraryOwner) {
 		super();
 		books = new LoadFromFile().getTempLibrary();
-//		try {
-//			books = wr.readFromFile();
-//		} catch (JsonParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		this.libraryOwner = libraryOwner;
 	}
 
