@@ -3,8 +3,6 @@ package rs.dud.library.main;
 import rs.dud.library.model.Book;
 import rs.dud.library.model.Library;
 import java.lang.reflect.Field;
-import java.time.DateTimeException;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javafx.application.Application;
@@ -220,13 +218,7 @@ public class App extends Application {
 		int id = Integer.parseInt(txtFieldAddBookID.getText());
 		int inventoryNumber = Integer.parseInt(txtFieldAddInventoryNumber.getText());
 		String publisherName = txtFieldAddPublisherName.getText();
-		try {
-			Year.parse(txtFieldAddYearOfPublishing.getText());
-		} catch (DateTimeException ex) {
-			lblNotValidYear.setVisible(true);
-			return false;
-		}
-		Year yearOfPublishing = (!txtFieldAddYearOfPublishing.getText().isEmpty()) ? Year.parse(txtFieldAddYearOfPublishing.getText()) : null;
+		int yearOfPublishing = Integer.parseInt(txtFieldAddYearOfPublishing.getText());
 		String edition = txtFieldAddEdition.getText();
 		String nameOfWriterOriginal = txtFieldAddNameOfWriterOriginal.getText();
 		String writer = txtFieldAddBookWriter.getText();

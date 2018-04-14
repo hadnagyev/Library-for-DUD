@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
@@ -65,14 +64,15 @@ public class LoadFromFile {
 			}
 			int inventoryNumber = Integer.parseInt(inventoryNumberValue);
 			String publisherName = readFromFile.get(indexOfFirstEntry++);
-			Year yearOfPublishing;
-			// skip if there is not year of publishing
-			if (readFromFile.get(indexOfFirstEntry).equals("")) {
-				yearOfPublishing = null;
-				indexOfFirstEntry++;
+			String yearOfPublishingValue;
+			String yearOfPublishingInput = readFromFile.get(indexOfFirstEntry++);
+			// skip if there is no inventory number
+			if (yearOfPublishingInput.equals("")) {
+				yearOfPublishingValue = "0";
 			} else {
-				yearOfPublishing = Year.parse(readFromFile.get(indexOfFirstEntry++));
+				yearOfPublishingValue = yearOfPublishingInput.substring(0, yearOfPublishingInput.length() - 2);
 			}
+			int yearOfPublishing = Integer.parseInt(yearOfPublishingValue);
 			String edition = readFromFile.get(indexOfFirstEntry++);
 			String nameOfWriterOriginal = readFromFile.get(indexOfFirstEntry++);
 			String writer = readFromFile.get(indexOfFirstEntry++);
