@@ -222,6 +222,9 @@ public class App extends Application {
 		if (txtFieldAddInventoryNumber.getText().isEmpty()) {
 			txtFieldAddInventoryNumber.setText("0");
 		}
+		if (txtFieldAddYearOfPublishing.getText().isEmpty()) {
+			txtFieldAddYearOfPublishing.setText("0");
+		}
 
 	}
 
