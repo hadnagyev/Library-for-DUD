@@ -5,7 +5,6 @@ import rs.dud.library.model.Library;
 import rs.dud.library.util.Database;
 import rs.dud.library.util.LoadFromFile;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -90,7 +89,7 @@ public class App extends Application {
 		setUpGpane();
 		primaryStage.setScene(new Scene(gPane, 1900, 850));//size of the window
 		primaryStage.show();
-		btnListAllBooks.fire();
+		
 	}
 
 	private void setUpTxtFields() {
@@ -235,7 +234,7 @@ public class App extends Application {
 		} catch (JsonMappingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}

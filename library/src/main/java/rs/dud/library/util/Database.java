@@ -11,9 +11,7 @@ import java.nio.file.Files;
 
 import java.nio.file.attribute.BasicFileAttributes;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
@@ -31,7 +29,7 @@ public class Database {
 		static String OLDFILE = "old";
 	}
 
-	public static void writeToFile(List<Book> books) throws JsonGenerationException, JsonMappingException, IOException {
+	public static void writeToFile(List<Book> books) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 
 		//Object to JSON in file
@@ -83,7 +81,7 @@ public class Database {
 
 	}
 
-	public static List<Book> loadFromFile() throws JsonParseException, JsonMappingException, IOException {
+	public static List<Book> loadFromFile() throws Exception {
 		findOldestOrNewestFile(newOrOld.NEWFILE);
 		try {
 			Scanner scanner = new Scanner(new File(path + findOldestOrNewestFile(newOrOld.NEWFILE)));
@@ -98,6 +96,8 @@ public class Database {
 			mapper.writeValue(new File(path + "/books2.json"), books);
 			mapper.writeValue(new File(path + "/books3.json"), books);
 			return books;
+		} catch (Exception e) {
+
 		}
 
 		Gson gson = new Gson();
