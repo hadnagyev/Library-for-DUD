@@ -5,9 +5,15 @@ import rs.dud.library.model.Library;
 import rs.dud.library.util.Database;
 import rs.dud.library.util.LoadFromFile;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,7 +50,7 @@ public class App extends Application {
 	ListView<Book> listViewSelectedBook = new ListView<Book>();
 	TableView<Book> tableViewReturnedBooks = new TableView<>();
 	String libraryOwner = "Svetislav";
-	
+	ObservableList<Book> observableList;
 	Library library;
 	Group groupAddNewBook = new Group();
 	TextField txtFieldAddBookID = new TextField();
@@ -62,29 +68,30 @@ public class App extends Application {
 	TextField txtFieldAddBookCondition = new TextField();
 	TextField txtFieldAddBookOrigin = new TextField();
 	TextField txtFieldAddBookLocation = new TextField();
-	
+
 	Label lblNotValidYear = new Label("Year not valid");
 
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
-	public void getBooksFromLegacy(){
+
+	public void getBooksFromLegacy() {
 		LoadFromFile lf = new LoadFromFile();
-		library = new Library(lf.getTempLibrary(),libraryOwner);
+		library = new Library(lf.getTempLibrary(), libraryOwner);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		getBooksFromLegacy();//use to get books from legacy doc file
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
-		Database.loadFromFile();
+		library.setBooks(Database.loadFromFile());
 		setUpButtons();
 		setUpTableViewReaction();
 		setUpTxtFields();
 		setUpGpane();
 		primaryStage.setScene(new Scene(gPane, 1900, 850));//size of the window
 		primaryStage.show();
+		btnListAllBooks.fire();
 	}
 
 	private void setUpTxtFields() {
@@ -111,6 +118,7 @@ public class App extends Application {
 		txtFieldAddBookLocation.setPromptText("Book Location");
 
 		//set up dynamic search
+		
 		txtFieldIdNumber.setOnKeyReleased(ke -> btnSearch.fire());
 
 		txtFieldBookTitle.setOnKeyReleased(ke -> {
@@ -122,14 +130,19 @@ public class App extends Application {
 		tableViewReturnedBooks.setOnMouseClicked(e -> {
 			ArrayList<Book> list = new ArrayList<Book>();
 			list.add(tableViewReturnedBooks.getSelectionModel().getSelectedItem());
+			//library.setBooks(list);
 			listViewSelectedBook.setItems(FXCollections.observableArrayList(list));
 		});
+	}
+
+	private ObservableList<Book> refreshBookList() {
+		return FXCollections.observableList(library.getBooks());
 	}
 
 	private void setUpButtons() {
 
 		// list all books button
-		ObservableList<Book> observableList = FXCollections.observableList(library.getBooks());
+		observableList = refreshBookList();
 		btnListAllBooks.setOnAction(e -> {
 			tableViewReturnedBooks.setItems(observableList);
 		});
@@ -165,7 +178,7 @@ public class App extends Application {
 
 			//adding books returned with id search
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
-			if (txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
+			if (txtFieldIdNumber.getText().matches("-?\\d+")&&txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
 				booksFound.add(library.getBookByID(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
 				if (library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())) != null) {
 					booksFound.add(library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())));
@@ -186,12 +199,14 @@ public class App extends Application {
 
 		btnSaveNewBook.setOnAction(e -> {
 			defaultValueOnAddNew();
-			if(saveNewBook()){
+			if (saveNewBook()) {
 				setUpButtons();
 				btnListAllBooks.fire();
 				btnNewBook.setDisable(false);
 				btnSaveNewBook.setDisable(true);
-			};
+				writeChangesToFile();
+			}
+			;
 
 		});
 
@@ -202,19 +217,34 @@ public class App extends Application {
 		btnDeleteSelectedBook.setOnAction(e -> {
 			deleteSelectedBook();
 			setUpButtons();
+			writeChangesToFile();
 			btnListAllBooks.fire();
 		});
 		//hide warning for invalid year
-		txtFieldAddYearOfPublishing.setOnMouseClicked(e ->{
+		txtFieldAddYearOfPublishing.setOnMouseClicked(e -> {
 			lblNotValidYear.setVisible(false);
 		});
 	}
-
+private void writeChangesToFile(){
+	try {
+		Database.writeToFile(library.getBooks());
+	} catch (JsonGenerationException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} catch (JsonMappingException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+}
 	private void deleteSelectedBook() {
 		listViewSelectedBook.getSelectionModel().selectFirst();
 		Book book = listViewSelectedBook.getSelectionModel().getSelectedItem();
 		listViewSelectedBook.getSelectionModel().clearSelection();
-		library.deleteBook(book.getId() - 1);
+
+		library.deleteBook(book);
 		btnListAllBooks.fire();
 	}
 
@@ -247,7 +277,7 @@ public class App extends Application {
 
 		Book newBook = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
 				bookOrigin, bookLocation);
-		library.getBooks().add(newBook);
+		library.addBook(newBook);
 		return true;
 	}
 
@@ -321,7 +351,7 @@ public class App extends Application {
 
 		groupAddNewBook.getChildren().addAll(txtFieldAddBookID, txtFieldAddInventoryNumber, txtFieldAddBookWriter, txtFieldAddPublisherName, txtFieldAddYearOfPublishing, txtFieldAddEdition,
 				txtFieldAddNameOfWriterOriginal, txtFieldAddTitle, txtFieldAddLanguage, txtFieldAddWritingSystem, txtFieldAddGenre, txtFieldAddBookCondition, txtFieldAddBookOrigin,
-				txtFieldAddBookLocation, btnSaveNewBook, btnPopulateFileds,lblNotValidYear);
+				txtFieldAddBookLocation, btnSaveNewBook, btnPopulateFileds, lblNotValidYear);
 		groupAddNewBook.setVisible(false);
 		btnSaveNewBook.setDisable(true);
 		lblNotValidYear.setVisible(false);

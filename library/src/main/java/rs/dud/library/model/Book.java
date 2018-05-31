@@ -1,9 +1,10 @@
 package rs.dud.library.model;
 
 
-public class Book {
-	int id; // redni broj in excel file
-	int inventoryNumber; // inv. broj
+public class Book extends Entity {
+	/*
+	 * id is redni broj inventoryNumber is inv. broj in excel file
+	 */
 	String publisherName; // Izdavac
 	int yearOfPublishing; // godina izdavanja
 	String edition; // edicija
@@ -20,9 +21,7 @@ public class Book {
 
 	public Book(int id, int inventoryNumber, String publisherName, int yearOfPublishing, String edition, String nameOfWriterOriginal, String writer, String originalTitle, String title,
 			String language, String writingSystem, String genre, String bookCondition, String bookOrigin, String bookLocation) {
-		super();
-		this.id = id;
-		this.inventoryNumber = inventoryNumber;
+		super(id,inventoryNumber);
 		this.publisherName = publisherName;
 		this.yearOfPublishing = yearOfPublishing;
 		this.edition = edition;

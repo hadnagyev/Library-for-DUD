@@ -6,30 +6,37 @@ import java.util.List;
 public class Library {
 	List<Book> books = new ArrayList<Book>();
 	String libraryOwner;
-	public Library(ArrayList<Book> books,String libraryOwner) {
+
+	public Library(ArrayList<Book> books, String libraryOwner) {
 		super();
 		this.books = books;
 		this.libraryOwner = libraryOwner;
 	}
 
+	public void addBook(Book book) {
+		books.add(book);
+	}
+
 	public List<Book> getBooks() {
 		return books;
 	}
-	
-	public void deleteBook(int index){
-		books.remove(index);
+
+	public void deleteBook(Book book) {
+		books.remove(book);
+
 	}
-	
-	public Book getLastBook(){
-		return books.get(books.size()-1);
+
+	public Book getLastBook() {
+		return books.get(books.size() - 1);
 	}
-	
-	public Book getBookByID(int id){
+
+	public Book getBookByID(int id) {
 		return books.get(id);
 	}
-	public Book getBookByInventoryNumber(int invNumber){
+
+	public Book getBookByInventoryNumber(int invNumber) {
 		for (Book book : books) {
-			if (book.getInventoryNumber()==invNumber) {
+			if (book.getInventoryNumber() == invNumber) {
 				return book;
 			}
 		}
