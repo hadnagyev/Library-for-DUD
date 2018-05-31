@@ -86,7 +86,9 @@ public class Database {
 	public static List<Book> loadFromFile() throws JsonParseException, JsonMappingException, IOException {
 		findOldestOrNewestFile(newOrOld.NEWFILE);
 		try {
-			booksFile = new Scanner(new File(path + findOldestOrNewestFile(newOrOld.NEWFILE))).useDelimiter("\\Z").next();
+			Scanner scanner = new Scanner(new File(path + findOldestOrNewestFile(newOrOld.NEWFILE)));
+			booksFile = scanner.useDelimiter("\\Z").next();
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			LoadFromFile lf = new LoadFromFile();
 			books = lf.getTempLibrary();

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -118,7 +117,7 @@ public class App extends Application {
 		txtFieldAddBookLocation.setPromptText("Book Location");
 
 		//set up dynamic search
-		
+
 		txtFieldIdNumber.setOnKeyReleased(ke -> btnSearch.fire());
 
 		txtFieldBookTitle.setOnKeyReleased(ke -> {
@@ -178,7 +177,8 @@ public class App extends Application {
 
 			//adding books returned with id search
 			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
-			if (txtFieldIdNumber.getText().matches("-?\\d+")&&txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty() && Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
+			if (txtFieldIdNumber.getText().matches("-?\\d+") && txtFieldIdNumber.getText() != null && !txtFieldIdNumber.getText().isEmpty()
+					&& Integer.parseInt(txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
 				booksFound.add(library.getBookByID(Integer.parseInt(txtFieldIdNumber.getText()) - 1));
 				if (library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())) != null) {
 					booksFound.add(library.getBookByInventoryNumber(Integer.parseInt(txtFieldIdNumber.getText())));
@@ -225,20 +225,22 @@ public class App extends Application {
 			lblNotValidYear.setVisible(false);
 		});
 	}
-private void writeChangesToFile(){
-	try {
-		Database.writeToFile(library.getBooks());
-	} catch (JsonGenerationException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	} catch (JsonMappingException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	} catch (IOException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
+
+	private void writeChangesToFile() {
+		try {
+			Database.writeToFile(library.getBooks());
+		} catch (JsonGenerationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (JsonMappingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
-}
+
 	private void deleteSelectedBook() {
 		listViewSelectedBook.getSelectionModel().selectFirst();
 		Book book = listViewSelectedBook.getSelectionModel().getSelectedItem();
