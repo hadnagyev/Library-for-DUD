@@ -1,6 +1,5 @@
 package rs.dud.library.model;
 
-
 public class Book extends Entity {
 	/*
 	 * id is redni broj inventoryNumber is inv. broj in excel file
@@ -21,7 +20,7 @@ public class Book extends Entity {
 
 	public Book(int id, int inventoryNumber, String publisherName, int yearOfPublishing, String edition, String nameOfWriterOriginal, String writer, String originalTitle, String title,
 			String language, String writingSystem, String genre, String bookCondition, String bookOrigin, String bookLocation) {
-		super(id,inventoryNumber);
+		super(id, inventoryNumber);
 		this.publisherName = publisherName;
 		this.yearOfPublishing = yearOfPublishing;
 		this.edition = edition;
@@ -37,13 +36,17 @@ public class Book extends Entity {
 		this.bookLocation = bookLocation;
 	}
 
+	public Book() {
+		super();
+	}
+
 	@Override
 	public String toString() {
 		String ls = System.getProperty("line.separator");
-		return "id=" + id + ls + " inventoryNumber = " + inventoryNumber + ls + " publisherName = " + publisherName + ls + " yearOfPublishing = " + yearOfPublishing + ls + " edition = "
-				+ edition + ls + " nameOfWriterOriginal = " + nameOfWriterOriginal + ls + " writer = " + writer + ls + " originalTitle = " + originalTitle + ls + " title = " + title + ls
-				+ " language = " + language + ls + " writingSystem = " + writingSystem + ls + " Genre = " + genre + ls + " bookCondition = " + bookCondition + ls + " bookOrigin = " + bookOrigin + ls
-				+ " bookLocation = " + bookLocation;
+		return "id=" + id + ls + " inventoryNumber = " + inventoryNumber + ls + " publisherName = " + publisherName + ls + " yearOfPublishing = " + yearOfPublishing + ls + " edition = " + edition + ls
+				+ " nameOfWriterOriginal = " + nameOfWriterOriginal + ls + " writer = " + writer + ls + " originalTitle = " + originalTitle + ls + " title = " + title + ls + " language = " + language
+				+ ls + " writingSystem = " + writingSystem + ls + " Genre = " + genre + ls + " bookCondition = " + bookCondition + ls + " bookOrigin = " + bookOrigin + ls + " bookLocation = "
+				+ bookLocation;
 	}
 
 	public int getId() {

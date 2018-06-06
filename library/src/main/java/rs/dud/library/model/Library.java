@@ -45,7 +45,8 @@ public class Library {
 	}
 
 	public void setBooks(List<Book> books) {
-		this.books = books;
+
+		this.books = new ArrayList<>(books);
 	}
 
 	public String getLibraryOwner() {

@@ -3,19 +3,15 @@ package rs.dud.library.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
 
-import java.nio.file.attribute.BasicFileAttributes;
-
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import rs.dud.library.model.Book;
 
@@ -34,8 +30,10 @@ public class Database {
 
 		//Object to JSON in file
 		mapper.writeValue(new File(path + findOldestOrNewestFile(newOrOld.OLDFILE)), books);
+
 	}
 
+	//TODO make this return file instead of string as the name suggests
 	public static String findOldestOrNewestFile(String ageOfFile) {
 		String oldest = "";
 		String newest = "";
@@ -82,7 +80,11 @@ public class Database {
 	}
 
 	public static List<Book> loadFromFile() throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
 		findOldestOrNewestFile(newOrOld.NEWFILE);
+		Gson gson = new Gson();
+		//		Type type = new TypeToken<List<Book>>() {
+		//		}.getType();
 		try {
 			Scanner scanner = new Scanner(new File(path + findOldestOrNewestFile(newOrOld.NEWFILE)));
 			booksFile = scanner.useDelimiter("\\Z").next();
@@ -90,8 +92,18 @@ public class Database {
 		} catch (FileNotFoundException e) {
 			LoadFromFile lf = new LoadFromFile();
 			books = lf.getTempLibrary();
-			writeToFile(books);
-			ObjectMapper mapper = new ObjectMapper();
+
+			//			String str = gson.toJson(books, type);
+			//			BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/books1.json"));
+			//			BufferedWriter writer1 = new BufferedWriter(new FileWriter(path + "/books2.json"));
+			//			BufferedWriter writer2 = new BufferedWriter(new FileWriter(path + "/books3.json"));
+			//			writer.write(str);
+			//			writer1.write(str);
+			//			writer2.write(str);
+			//			writer.close();
+			//			writer1.close();
+			//			writer2.close();
+
 			mapper.writeValue(new File(path + "/books1.json"), books);
 			mapper.writeValue(new File(path + "/books2.json"), books);
 			mapper.writeValue(new File(path + "/books3.json"), books);
@@ -100,10 +112,11 @@ public class Database {
 
 		}
 
-		Gson gson = new Gson();
-		Type type = new TypeToken<List<Book>>() {
-		}.getType();
-		books = gson.fromJson(booksFile, type);
+		//		ObjectMapper objmap = new ObjectMapper();
+		//		System.out.println(booksFile);
+		//		books = Arrays.asList(objmap.readValue(findOldestOrNewestFile(newOrOld.NEWFILE), Book[].class));
+
+		books = Arrays.asList(gson.fromJson(booksFile, Book[].class));
 		return books;
 
 	}

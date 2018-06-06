@@ -9,4 +9,8 @@ public class Entity {
 		this.id = id;
 		this.inventoryNumber = inventoryNumber;
 	}
+
+	public Entity() {
+
+	}
 }
