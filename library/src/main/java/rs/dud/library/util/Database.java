@@ -1,13 +1,15 @@
 package rs.dud.library.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -86,23 +88,13 @@ public class Database {
 		//		Type type = new TypeToken<List<Book>>() {
 		//		}.getType();
 		try {
-			Scanner scanner = new Scanner(new File(path + findOldestOrNewestFile(newOrOld.NEWFILE)));
-			booksFile = scanner.useDelimiter("\\Z").next();
-			scanner.close();
+			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path + findOldestOrNewestFile(newOrOld.NEWFILE)), "UTF-8"));
+			booksFile = in.readLine();
+			in.close();
+
 		} catch (FileNotFoundException e) {
 			LoadFromFile lf = new LoadFromFile();
 			books = lf.getTempLibrary();
-
-			//			String str = gson.toJson(books, type);
-			//			BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/books1.json"));
-			//			BufferedWriter writer1 = new BufferedWriter(new FileWriter(path + "/books2.json"));
-			//			BufferedWriter writer2 = new BufferedWriter(new FileWriter(path + "/books3.json"));
-			//			writer.write(str);
-			//			writer1.write(str);
-			//			writer2.write(str);
-			//			writer.close();
-			//			writer1.close();
-			//			writer2.close();
 
 			mapper.writeValue(new File(path + "/books1.json"), books);
 			mapper.writeValue(new File(path + "/books2.json"), books);
@@ -111,10 +103,6 @@ public class Database {
 		} catch (Exception e) {
 
 		}
-
-		//		ObjectMapper objmap = new ObjectMapper();
-		//		System.out.println(booksFile);
-		//		books = Arrays.asList(objmap.readValue(findOldestOrNewestFile(newOrOld.NEWFILE), Book[].class));
 
 		books = Arrays.asList(gson.fromJson(booksFile, Book[].class));
 		return books;
