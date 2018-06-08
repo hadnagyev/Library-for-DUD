@@ -82,15 +82,14 @@ public class App extends Application {
 				booksFound = library.getBookByBookCondition(booksFound, txtSearch);
 				booksFound = library.getBookByBookOrigin(booksFound, txtSearch);
 				booksFound = library.getBookByBookLocation(booksFound, txtSearch);
-			}
-
-			//adding books returned with id search
-			//only execute if txtFieldIDnumber has valid data, number, not empty and less than largest id in array list
-			if (ui.txtFieldIdNumber.getText().matches("-?\\d+") && ui.txtFieldIdNumber.getText() != null && !ui.txtFieldIdNumber.getText().isEmpty()
-					&& Integer.parseInt(ui.txtFieldIdNumber.getText()) < library.getBooks().size() - 1) {
-				booksFound.add(library.getBookByID(Integer.parseInt(ui.txtFieldIdNumber.getText()) - 1));
-				if (library.getBookByInventoryNumber(Integer.parseInt(ui.txtFieldIdNumber.getText())) != null) {
-					booksFound.add(library.getBookByInventoryNumber(Integer.parseInt(ui.txtFieldIdNumber.getText())));
+				if (txtSearch.matches("-?\\d+")) {
+					Book tempBook = library.getBookByID(Integer.parseInt(txtSearch));
+					if (tempBook != null) {
+						booksFound.add(tempBook);
+					}
+				}
+				if (txtSearch.matches("-?\\d+")) {
+					booksFound = library.getBookByYearOfPublishing(Integer.parseInt(txtSearch));
 				}
 			}
 

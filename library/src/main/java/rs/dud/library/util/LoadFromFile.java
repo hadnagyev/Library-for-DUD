@@ -64,15 +64,16 @@ public class LoadFromFile {
 			}
 			int inventoryNumber = Integer.parseInt(inventoryNumberValue);
 			String publisherName = readFromFile.get(indexOfFirstEntry++);
-			String yearOfPublishingValue;
+
 			String yearOfPublishingInput = readFromFile.get(indexOfFirstEntry++);
 			// skip if there is no inventory number
+			int yearOfPublishing = 0;
 			if (yearOfPublishingInput.equals("")) {
-				yearOfPublishingValue = "0";
+				yearOfPublishing = 0;
 			} else {
-				yearOfPublishingValue = yearOfPublishingInput.substring(0, yearOfPublishingInput.length() - 2);
+				yearOfPublishing = Integer.parseInt(yearOfPublishingInput);
 			}
-			int yearOfPublishing = Integer.parseInt(yearOfPublishingValue);
+
 			String edition = readFromFile.get(indexOfFirstEntry++);
 			String nameOfWriterOriginal = readFromFile.get(indexOfFirstEntry++);
 			String writer = readFromFile.get(indexOfFirstEntry++);
@@ -90,7 +91,6 @@ public class LoadFromFile {
 			Book book = new Book(id, inventoryNumber, publisherName, yearOfPublishing, edition, nameOfWriterOriginal, writer, originalTitle, title, language, writingSystem, genre, bookCondition,
 					bookOrigin, bookLocation);
 			tempLibrary.add(book);
-
 			// end if there is "id number" in the string which means it is the
 			// bottom of the table got from file
 			if (readFromFile.get(indexOfFirstEntry).equals("R.br.")) {

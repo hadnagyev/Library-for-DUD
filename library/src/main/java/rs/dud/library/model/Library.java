@@ -31,7 +31,22 @@ public class Library {
 	}
 
 	public Book getBookByID(int id) {
-		return books.get(id);
+		for (Book book : books) {
+			if (book.getId() == id) {
+				return book;
+			}
+		}
+		return null;
+	}
+
+	public ArrayList<Book> getBookByYearOfPublishing(int year) {
+		ArrayList<Book> retVal = new ArrayList<>();
+		for (Book book : books) {
+			if (book.getYearOfPublishing() == year) {
+				retVal.add(book);
+			}
+		}
+		return retVal;
 	}
 
 	public Book getBookByInventoryNumber(int invNumber) {

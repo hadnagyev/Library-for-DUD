@@ -85,8 +85,6 @@ public class Database {
 		ObjectMapper mapper = new ObjectMapper();
 		findOldestOrNewestFile(newOrOld.NEWFILE);
 		Gson gson = new Gson();
-		//		Type type = new TypeToken<List<Book>>() {
-		//		}.getType();
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path + findOldestOrNewestFile(newOrOld.NEWFILE)), "UTF-8"));
 			booksFile = in.readLine();
@@ -103,7 +101,6 @@ public class Database {
 		} catch (Exception e) {
 
 		}
-
 		books = Arrays.asList(gson.fromJson(booksFile, Book[].class));
 		return books;
 
