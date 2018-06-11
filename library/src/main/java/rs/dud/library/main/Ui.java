@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -23,12 +24,6 @@ import javafx.scene.paint.Paint;
 import rs.dud.library.model.Book;
 
 public class Ui {
-	Button btnListAllBooks = new Button("List all books");
-	Button btnSearch = new Button("Search");
-	Button btnNewBook = new Button("New Book");
-	Button btnSaveNewBook = new Button("Save new book");
-	Button btnPopulateFileds = new Button("Populate all fields with default values");
-	Button btnDeleteSelectedBook = new Button("Delete selected book");
 
 	TextField txtFieldIdNumber = new TextField();
 	TextField txtFieldBookTitle = new TextField();
@@ -39,6 +34,7 @@ public class Ui {
 	TextField txtFieldAddYearOfPublishing = new TextField();
 	TextField txtFieldAddEdition = new TextField();
 	TextField txtFieldAddNameOfWriterOriginal = new TextField();
+	ObservableList<Book> observableList;
 
 	Group groupAddNewBook = new Group();
 
@@ -47,6 +43,11 @@ public class Ui {
 		setUpTableViewReaction();
 		setUpTxtFields();
 		setUpGpane();
+		setUpButtons();
+	}
+
+	private void setUpButtons() {
+		observableList = refreshBookList();
 	}
 
 	public Ui(Button btnListAllBooks, Button btnSearch, Button btnNewBook, Button btnSaveNewBook, Button btnPopulateFileds, Button btnDeleteSelectedBook, TextField txtFieldIdNumber,

@@ -1,8 +1,5 @@
 package rs.dud.library.main;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 
@@ -19,7 +16,7 @@ import rs.dud.library.util.LoadFromFile;
 public class App extends Application {
 	Ui ui;
 	String libraryOwner = "Svetislav";
-	ObservableList<Book> observableList;
+
 	Library library;
 
 	public static void main(String[] args) {
@@ -37,7 +34,7 @@ public class App extends Application {
 		getBooksFromLegacy();//use to get books from legacy doc file
 		primaryStage.setTitle(library.getLibraryOwner() + " Library");
 		library.setBooks(Database.loadFromFile());
-		setUpButtons();
+
 		primaryStage.setScene(new Scene(ui.gPane, 1900, 850));//size of the window
 		primaryStage.show();
 
@@ -45,98 +42,6 @@ public class App extends Application {
 
 	private ObservableList<Book> refreshBookList() {
 		return FXCollections.observableList(library.getBooks());
-	}
-
-	private void setUpButtons() {
-
-		// list all books button
-		observableList = refreshBookList();
-		ui.btnListAllBooks.setOnAction(e -> {
-			ui.tableViewReturnedBooks.setItems(observableList);
-		});
-
-		ui.btnNewBook.setOnAction(e -> {
-			ui.arrangeFieldsAddNewBook();
-			ui.groupAddNewBook.setVisible(true);
-			//getting id of the last book in library and adding 1 for the new one
-			ui.txtFieldAddBookID.setText(Integer.toString(library.getLastBook().getId() + 1));
-			ui.txtFieldAddBookID.setDisable(true);
-			ui.btnNewBook.setDisable(true);
-			ui.btnSaveNewBook.setDisable(false);
-		});
-
-		//list Book by specific id or text that user typed in txtFields
-		ui.btnSearch.setOnAction(e -> {
-			ArrayList<Book> booksFound = new ArrayList<Book>();
-			//only execute if txtfieldTitle has value
-			String txtSearch = ui.txtFieldBookTitle.getText();
-			if (txtSearch != null && !txtSearch.isEmpty()) {
-				booksFound = library.getBookByTitle(booksFound, txtSearch);
-				booksFound = library.getBookByOriginalTitle(booksFound, txtSearch);
-				booksFound = library.getBookByPublisherName(booksFound, txtSearch);
-				booksFound = library.getBookByEdition(booksFound, txtSearch);
-				booksFound = library.getBookByWriter(booksFound, txtSearch);
-				booksFound = library.getBookByLanguage(booksFound, txtSearch);
-				booksFound = library.getBookByGenre(booksFound, txtSearch);
-				booksFound = library.getBookByNameOfWriterOriginal(booksFound, txtSearch);
-				booksFound = library.getBookByBookCondition(booksFound, txtSearch);
-				booksFound = library.getBookByBookOrigin(booksFound, txtSearch);
-				booksFound = library.getBookByBookLocation(booksFound, txtSearch);
-				if (txtSearch.matches("-?\\d+")) {
-					Book tempBook = library.getBookByID(Integer.parseInt(txtSearch));
-					if (tempBook != null) {
-						booksFound.add(tempBook);
-					}
-				}
-				if (txtSearch.matches("-?\\d+")) {
-					booksFound = library.getBookByYearOfPublishing(Integer.parseInt(txtSearch));
-				}
-			}
-
-			//if only one item found in tableview how it immediatelly in listview, otherwise clear listview
-			if (booksFound.size() < 2 && booksFound.size() > 0) {
-				ui.listViewSelectedBook.setItems(FXCollections.observableArrayList(booksFound));
-			} else {
-				ui.listViewSelectedBook.getItems().clear();
-			}
-			booksFound.sort(Comparator.comparing(Book::getId));
-			ObservableList<Book> observableList2 = FXCollections.observableList(booksFound);
-			ui.tableViewReturnedBooks.setItems(observableList2);
-
-		});
-
-		ui.btnSaveNewBook.setOnAction(e -> {
-			defaultValueOnAddNew();
-			if (saveNewBook()) {
-				setUpButtons();
-				ui.btnListAllBooks.fire();
-				ui.btnNewBook.setDisable(false);
-				ui.btnSaveNewBook.setDisable(true);
-				writeChangesToFile();
-			}
-			;
-
-		});
-
-		ui.btnPopulateFileds.setOnAction(e -> {
-			defaultValueOnAddNew();
-		});
-
-		ui.btnDeleteSelectedBook.setOnAction(e -> {
-			try {
-				deleteSelectedBook();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			setUpButtons();
-			writeChangesToFile();
-			ui.btnListAllBooks.fire();
-		});
-		//hide warning for invalid year
-		ui.txtFieldAddYearOfPublishing.setOnMouseClicked(e -> {
-			ui.lblNotValidYear.setVisible(false);
-		});
 	}
 
 	private void writeChangesToFile() {
@@ -171,7 +76,6 @@ public class App extends Application {
 		if (ui.txtFieldAddYearOfPublishing.getText().isEmpty()) {
 			ui.txtFieldAddYearOfPublishing.setText("0");
 		}
-
 	}
 
 	private boolean saveNewBook() {
